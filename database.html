@@ -172,7 +172,7 @@
                             feature.geometry.coordinates[0]
                         ];
                         map.setView(latlng, 23);
-
+                        searchResults.innerHTML = '';
                         // Display all feature details in the info pane
                         featureDetails.innerHTML = `
                             <h3>${feature.properties.Name}</h3>
