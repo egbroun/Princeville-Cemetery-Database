@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Princeville History</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        .section {
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        #map-container {
+            display: flex;
+            margin: 20px 0;
+            gap: 20px;
+        }
+
+        #map {
+            flex: 2;
+            height: 70vh;
+            border: 1px solid #ccc;
+        }
+
+        #info-pane {
+            flex: 1;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #search-bar {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        .info-details {
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .info-details:hover {
+            background: #e9ecef;
+        }
+
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#princeville">The Town of Princeville</a>
+        <a href="#wilson-cemetery">Wilson Cemetery</a>
+    </header>
+
+    <section id="princeville" class="section">
+        <h1>The Town of Princeville</h1>
+        <p>Explore the rich history of Princeville through interactive maps and insights.</p>
+        <iframe src="https://cartocollective.blob.core.windows.net/princeville/LeafletSite/Princeville.html"></iframe>
+    </section>
+
+    <section id="wilson-cemetery" class="section">
+        <h1>Wilson Cemetery</h1>
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="info-pane">
+                <input id="search-bar" type="text" placeholder="Search by name...">
+                <div id="search-results"></div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Vectors/Gravestones.js"></script>
+    <script>
+        // Initialize map for Wilson Cemetery section
+        var map = L.map('map').setView([35.891264, -77.513262], 18);
+
+        // Add OpenStreetMap layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add Cemetery tile layer
+        var Cemetery = L.tileLayer('https://cartocollective.blob.core.windows.net/princeville/Feb17Tiles/{z}/{x}/{y}.png', {
+            maxZoom: 24,
+            maxNativeZoom: 23,
+            attribution: 'Cemetery',
+            errorTileUrl: 'https://via.placeholder.com/256?text=Tile+Not+Found'
+        }).addTo(map);
+
+        // GeoJSON layer for gravestones
+        var gravestonesLayer = L.geoJSON(Gravestones, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.Name) {
+                    layer.bindPopup("<strong>" + feature.properties.Name + "</strong>");
+                }
+            },
+            pointToLayer: function (feature, latlng) {
+                return L.circleMarker(latlng, {
+                    radius: 8,
+                    fillColor: "#ff7800",
+                    color: "#000",
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
+            }
+        }).addTo(map);
+
+        // Search functionality
+        var searchBar = document.getElementById('search-bar');
+        var searchResults = document.getElementById('search-results');
+
+        searchBar.addEventListener('input', function () {
+            var query = searchBar.value.toLowerCase();
+            searchResults.innerHTML = ''; // Clear previous results
+
+            Gravestones.features.forEach(function (feature) {
+                var name = feature.properties.Name.toLowerCase();
+                if (name.includes(query)) {
+                    // Create a clickable result item
+                    var resultDiv = document.createElement('div');
+                    resultDiv.className = 'info-details';
+                    resultDiv.innerHTML = `<strong>${feature.properties.Name}</strong>`;
+                    resultDiv.addEventListener('click', function () {
+                        // Zoom to the selected feature
+                        var latlng = [
+                            feature.geometry.coordinates[1],
+                            feature.geometry.coordinates[0]
+                        ];
+                        map.setView(latlng, 23);
+
+                        // Highlight the selected feature
+                        gravestonesLayer.eachLayer(function (layer) {
+                            if (layer.feature.properties.Name === feature.properties.Name) {
+                                layer.openPopup();
+                            }
+                        });
+                    });
+
+                    // Append result to search results pane
+                    searchResults.appendChild(resultDiv);
+                }
+            });
+
+            // Display "No results found" if no matches
+            if (!searchResults.innerHTML.trim()) {
+                searchResults.innerHTML = '<div class="info-details">No results found</div>';
+            }
+        });
+    </script>
+</body>
+</html>
