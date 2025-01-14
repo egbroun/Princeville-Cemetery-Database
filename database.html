@@ -60,7 +60,7 @@
         }
 
         #search-bar {
-            width: 100%;
+            width: 90%;
             padding: 8px;
             margin-bottom: 10px;
         }
@@ -129,24 +129,63 @@
             errorTileUrl: 'https://via.placeholder.com/256?text=Tile+Not+Found'
         }).addTo(map);
 
-        // GeoJSON layer for gravestones
-        var gravestonesLayer = L.geoJSON(Gravestones, {
-            onEachFeature: function (feature, layer) {
-                if (feature.properties && feature.properties.Name) {
-                    layer.bindPopup("<strong>" + feature.properties.Name + "</strong>");
-                }
-            },
-            pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, {
-                    radius: 8,
-                    fillColor: "#ff7800",
-                    color: "#000",
-                    weight: 1,
-                    opacity: 1,
-                    fillOpacity: 0.8
-                });
+// Add a dedicated container for displaying selected feature info
+var infoPane = document.getElementById('search-results');
+
+// GeoJSON layer
+var gravestonesLayer = L.geoJSON(Gravestones, {
+    onEachFeature: function (feature, layer) {
+        if (feature.properties && feature.properties.Name) {
+            layer.bindPopup("<strong>" + feature.properties.Name + "</strong>");
+        }
+
+        // Add click event for each point
+        layer.on('click', function () {
+            var latlng = [
+                feature.geometry.coordinates[1],
+                feature.geometry.coordinates[0]
+            ];
+            map.setView(latlng, 23); // Zoom to the point
+
+            // Highlight the selected feature
+            if (highlightedLayer) {
+                gravestonesLayer.resetStyle(highlightedLayer); // Reset previously highlighted layer
             }
-        }).addTo(map);
+            highlightedLayer = layer; // Set the clicked layer as highlighted
+            layer.setStyle({
+                fillColor: "red",
+                color: "red",
+                weight: 2,
+                radius: 10
+            });
+
+            // Display feature info in the info pane
+            infoPane.innerHTML = ''; // Clear previous content
+            var infoHTML = `
+                <h3>${feature.properties.Name}</h3>
+                <p>${Object.keys(feature.properties)
+                    .map(key => `<strong>${key}:</strong> ${feature.properties[key]}`)
+                    .join('<br>')}
+                </p>`;
+            infoPane.innerHTML = infoHTML; // Populate the info pane
+        });
+
+        // Add a unique ID to each layer for easy reference
+        layer.featureId = feature.properties.Name;
+    },
+    pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, {
+            radius: 8,
+            fillColor: "#ff7800",
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        });
+    }
+}).addTo(map);
+
+
 
         // Search functionality
         var searchBar = document.getElementById('search-bar');
