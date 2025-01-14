@@ -102,10 +102,10 @@
         <div id="map-container">
             <div id="map"></div>
             <div id="info-pane">
-                <input id="search-bar" type="text" placeholder="Search by name...">
+                <input id="search-bar" type="text" placeholder="Search by name..." style="width: 100%; padding: 8px;">
                 <div id="search-results"></div>
-                <div id="feature-details" style="margin-top: 20px;"></div>
-            </div>
+                <div id="info-pane"></div> <!-- Dedicated info pane for displaying clicked point info -->
+            </div>            
         </div>
     </section>
 
@@ -130,28 +130,29 @@
         }).addTo(map);
 
 // Add a dedicated container for displaying selected feature info
+// Single info pane for both search and click information
 var infoPane = document.getElementById('search-results');
 
-// GeoJSON layer
+// GeoJSON layer with click interaction
 var gravestonesLayer = L.geoJSON(Gravestones, {
     onEachFeature: function (feature, layer) {
         if (feature.properties && feature.properties.Name) {
             layer.bindPopup("<strong>" + feature.properties.Name + "</strong>");
         }
 
-        // Add click event for each point
+        // Handle click events
         layer.on('click', function () {
             var latlng = [
                 feature.geometry.coordinates[1],
                 feature.geometry.coordinates[0]
             ];
-            map.setView(latlng, 23); // Zoom to the point
+            map.setView(latlng, 23); // Zoom to the selected point
 
             // Highlight the selected feature
             if (highlightedLayer) {
-                gravestonesLayer.resetStyle(highlightedLayer); // Reset previously highlighted layer
+                gravestonesLayer.resetStyle(highlightedLayer); // Reset previous highlight
             }
-            highlightedLayer = layer; // Set the clicked layer as highlighted
+            highlightedLayer = layer;
             layer.setStyle({
                 fillColor: "red",
                 color: "red",
@@ -159,19 +160,9 @@ var gravestonesLayer = L.geoJSON(Gravestones, {
                 radius: 10
             });
 
-            // Display feature info in the info pane
-            infoPane.innerHTML = ''; // Clear previous content
-            var infoHTML = `
-                <h3>${feature.properties.Name}</h3>
-                <p>${Object.keys(feature.properties)
-                    .map(key => `<strong>${key}:</strong> ${feature.properties[key]}`)
-                    .join('<br>')}
-                </p>`;
-            infoPane.innerHTML = infoHTML; // Populate the info pane
+            // Update the info pane with clicked point details
+            updateInfoPane(feature);
         });
-
-        // Add a unique ID to each layer for easy reference
-        layer.featureId = feature.properties.Name;
     },
     pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, {
@@ -185,61 +176,67 @@ var gravestonesLayer = L.geoJSON(Gravestones, {
     }
 }).addTo(map);
 
+// Search functionality
+var searchBar = document.getElementById('search-bar');
+searchBar.addEventListener('input', function () {
+    var query = searchBar.value.toLowerCase();
+    infoPane.innerHTML = ''; // Clear previous content
 
+    Gravestones.features.forEach(function (feature) {
+        var name = feature.properties.Name.toLowerCase();
+        if (name.includes(query)) {
+            // Create a clickable result item
+            var resultDiv = document.createElement('div');
+            resultDiv.className = 'info-details';
+            resultDiv.innerHTML = `<strong>${feature.properties.Name}</strong>`;
+            resultDiv.addEventListener('click', function () {
+                var latlng = [
+                    feature.geometry.coordinates[1],
+                    feature.geometry.coordinates[0]
+                ];
+                map.setView(latlng, 23); // Zoom to the selected feature
 
-        // Search functionality
-        var searchBar = document.getElementById('search-bar');
-        var searchResults = document.getElementById('search-results');
-        var featureDetails = document.getElementById('feature-details');
-
-        searchBar.addEventListener('input', function () {
-            var query = searchBar.value.toLowerCase();
-            searchResults.innerHTML = ''; // Clear previous results
-            featureDetails.innerHTML = ''; // Clear feature details
-
-            Gravestones.features.forEach(function (feature) {
-                var name = feature.properties.Name.toLowerCase();
-                if (name.includes(query)) {
-                    // Create a clickable result item
-                    var resultDiv = document.createElement('div');
-                    resultDiv.className = 'info-details';
-                    resultDiv.innerHTML = `<strong>${feature.properties.Name}</strong>`;
-                    resultDiv.addEventListener('click', function () {
-                        // Zoom to the selected feature
-                        var latlng = [
-                            feature.geometry.coordinates[1],
-                            feature.geometry.coordinates[0]
-                        ];
-                        map.setView(latlng, 23);
-                        searchResults.innerHTML = '';
-                        // Display all feature details in the info pane
-                        featureDetails.innerHTML = `
-                            <h3>${feature.properties.Name}</h3>
-                            <ul>
-                                ${Object.entries(feature.properties).map(([key, value]) =>
-                                    `<li><strong>${key}:</strong> ${value}</li>`
-                                ).join('')}
-                            </ul>
-                        `;
-
-                        // Highlight the selected feature on the map
-                        gravestonesLayer.eachLayer(function (layer) {
-                            if (layer.feature.properties.Name === feature.properties.Name) {
-                                layer.openPopup();
-                            }
+                // Highlight the selected feature on the map
+                gravestonesLayer.eachLayer(function (layer) {
+                    if (layer.feature.properties.Name === feature.properties.Name) {
+                        layer.openPopup();
+                        layer.setStyle({
+                            fillColor: "red",
+                            color: "red",
+                            weight: 2,
+                            radius: 10
                         });
-                    });
+                        highlightedLayer = layer; // Update the highlighted layer
+                    }
+                });
 
-                    // Append result to search results pane
-                    searchResults.appendChild(resultDiv);
-                }
+                // Update the info pane with search-selected feature details
+                updateInfoPane(feature);
             });
 
-            // Display "No results found" if no matches
-            if (!searchResults.innerHTML.trim()) {
-                searchResults.innerHTML = '<div class="info-details">No results found</div>';
-            }
-        });
+            // Append result to the info pane
+            infoPane.appendChild(resultDiv);
+        }
+    });
+
+    // Display "No results found" if no matches
+    if (!infoPane.innerHTML.trim()) {
+        infoPane.innerHTML = '<div class="info-details">No results found</div>';
+    }
+});
+
+// Function to update the info pane
+function updateInfoPane(feature) {
+    infoPane.innerHTML = `
+        <h3>${feature.properties.Name}</h3>
+        <ul>
+            ${Object.entries(feature.properties).map(([key, value]) =>
+                `<li><strong>${key}:</strong> ${value}</li>`
+            ).join('')}
+        </ul>
+    `;
+}
+
     </script>
 </body>
 </html>
