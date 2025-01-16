@@ -59,7 +59,10 @@
             padding: 20px;
             margin: 20px auto;
             max-width: 1200px;
-            font-size: 16pt;
+        }
+     
+        #princeville {
+    font-size: 16pt;
         }
 
         #map-container {
@@ -80,11 +83,13 @@
             background: #f8f9fa;
             border: 1px solid #ccc;
             border-radius: 5px;
+            height: 67vh;
             overflow-y: auto;
         }
 
+    
         #search-bar {
-            width: 100%;
+            width: 900%;
             padding: 8px;
             margin-bottom: 10px;
         }
@@ -116,16 +121,20 @@
 
 .photo-box img {
     width: 100%;
-    height: auto;
+    height: 300px; /* Set a uniform height for both images */
+    object-fit: cover; /* Ensures the image is cropped proportionally */
     border: 1px solid #ddd;
     border-radius: 5px;
 }
 
-        iframe {
-            width: 100%;
-            height: 600px;
-            border: 1px solid #ddd;
-        }
+iframe {
+    width: 100%;
+    max-width: 1200px; /* Align with the cemetery section width */
+    margin: 40px auto; /* Center the iframe and add space above */
+    display: block; /* Ensure proper centering as a block element */
+    height: 600px;
+    border: 1px solid #ddd;
+}
     </style>
 </head>
 <body>
@@ -144,7 +153,7 @@
     <!-- Princeville Section -->
     <section id="princeville" class="section">
         <h1>The Town of Princeville</h1>
-        <p>Princeville, North Carolina, located south east of Rocky Mount is a small town recognized as the 
+        <p>Princeville, North Carolina, located south east of Rocky Mount, is a small town recognized as the 
         first independently governed African American community chartered in the United States. Princeville
         remains around 92% African American to this day and is an important cultural hub for the area. Wilson Cemetery
     epitomizes this rich history with gravestones dating back from the time of the towns settlement in 1865 to the
@@ -161,7 +170,7 @@ has changed over time and to see the cemetery databse.</p>
         <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Freedom%20Hill.jpg" alt="Historic Image of Princeville">
     </div>
     <div class="photo-box">
-        <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Flood.jpeg" alt="Another Historic Image">
+        <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Hurricane-Floyd-flooding-in-Princeville-J.-Jordan-US-Army-Corps-of-Engineers.webp" alt="Another Historic Image">
     </div>
 </div>
 
@@ -183,6 +192,8 @@ has changed over time and to see the cemetery databse.</p>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Vectors/Gravestones.js"></script>
     <script>
+        var highlightedLayer = null;
+
         // Initialize map for Wilson Cemetery section
         var map = L.map('map').setView([35.891264, -77.513262], 18);
 
@@ -200,7 +211,7 @@ has changed over time and to see the cemetery databse.</p>
             errorTileUrl: 'https://via.placeholder.com/256?text=Tile+Not+Found'
         }).addTo(map);
 
-// Add a dedicated container for displaying selected feature info
+
 // Single info pane for both search and click information
 var infoPane = document.getElementById('search-results');
 
@@ -259,7 +270,7 @@ searchBar.addEventListener('input', function () {
             // Create a clickable result item
             var resultDiv = document.createElement('div');
             resultDiv.className = 'info-details';
-            resultDiv.innerHTML = <strong>${feature.properties.Name}</strong>;
+            resultDiv.innerHTML = `<strong>${feature.properties.Name}</strong>`;
             resultDiv.addEventListener('click', function () {
                 var latlng = [
                     feature.geometry.coordinates[1],
@@ -311,3 +322,4 @@ function updateInfoPane(feature) {
     </script>
 </body>
 </html>
+
