@@ -59,6 +59,7 @@
             padding: 20px;
             margin: 20px auto;
             max-width: 1200px;
+            font-size: 16pt;
         }
 
         #map-container {
@@ -101,18 +102,24 @@
             background: #e9ecef;
         }
 
-        .photo-box {
-            margin: 20px auto;
-            max-width: 800px;
-            text-align: center;
-        }
+        .photo-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+}
 
-        .photo-box img {
-            width: 100%;
-            height: auto;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
+.photo-box {
+    text-align: center;
+    max-width: 45%; /* Adjust width for the desired size */
+}
+
+.photo-box img {
+    width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
 
         iframe {
             width: 100%;
@@ -137,15 +144,29 @@
     <!-- Princeville Section -->
     <section id="princeville" class="section">
         <h1>The Town of Princeville</h1>
-        <p>Princeville is a historic town, rich in cultural significance and resilience. Explore its history and landmarks through our interactive resources.</p>
-        <iframe src="https://cartocollective.blob.core.windows.net/princeville/LeafletSite/Princeville.html"></iframe>
+        <p>Princeville, North Carolina, located south east of Rocky Mount is a small town recognized as the 
+        first independently governed African American community chartered in the United States. Princeville
+        remains around 92% African American to this day and is an important cultural hub for the area. Wilson Cemetery
+    epitomizes this rich history with gravestones dating back from the time of the towns settlement in 1865 to the
+    present day. Due to the Princeville's low elevation along the Tar River, the town is extemely ceceptable to flooding
+    and has sustained significant damage in recent hurricanes. This project aims to not only digitize this cemetery
+in the event of flood damage, but also provide an opportunity for people around the community and country to make
+ ancestral connections to those buried in the cemetery. Please use the interactive maps below to explore how Princeville 
+has changed over time and to see the cemetery databse.</p>
     </section>
 
     <!-- Additional Photo Section -->
+<div class="photo-row">
     <div class="photo-box">
         <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Freedom%20Hill.jpg" alt="Historic Image of Princeville">
-        <p>An archival photo of Princeville, showcasing its cultural heritage.</p>
     </div>
+    <div class="photo-box">
+        <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Flood.jpeg" alt="Another Historic Image">
+    </div>
+</div>
+
+    <!-- i frame -->
+<iframe src="https://cartocollective.blob.core.windows.net/princeville/LeafletSite/Princeville.html"></iframe>
 
     <!-- Wilson Cemetery Section -->
     <section id="wilson-cemetery" class="section">
@@ -238,7 +259,7 @@ searchBar.addEventListener('input', function () {
             // Create a clickable result item
             var resultDiv = document.createElement('div');
             resultDiv.className = 'info-details';
-            resultDiv.innerHTML = `<strong>${feature.properties.Name}</strong>`;
+            resultDiv.innerHTML = <strong>${feature.properties.Name}</strong>;
             resultDiv.addEventListener('click', function () {
                 var latlng = [
                     feature.geometry.coordinates[1],
