@@ -12,6 +12,29 @@
         }
 
         header {
+            position: relative;
+            text-align: center;
+            color: white;
+        }
+
+        header img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        header .overlay-text {
+            position: absolute;
+            top: 50%;
+            left: 30%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        nav {
             background-color: #333;
             color: white;
             padding: 10px;
@@ -21,14 +44,14 @@
             z-index: 1000;
         }
 
-        header a {
+        nav a {
             color: white;
             margin: 0 15px;
             text-decoration: none;
             font-weight: bold;
         }
 
-        header a:hover {
+        nav a:hover {
             text-decoration: underline;
         }
 
@@ -60,7 +83,7 @@
         }
 
         #search-bar {
-            width: 90%;
+            width: 100%;
             padding: 8px;
             margin-bottom: 10px;
         }
@@ -78,6 +101,19 @@
             background: #e9ecef;
         }
 
+        .photo-box {
+            margin: 20px auto;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .photo-box img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
         iframe {
             width: 100%;
             height: 600px;
@@ -86,17 +122,32 @@
     </style>
 </head>
 <body>
+    <!-- Header with photo and overlay text -->
     <header>
-        <a href="#princeville">The Town of Princeville</a>
-        <a href="#wilson-cemetery">Wilson Cemetery</a>
+        <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/IMG_2801.jpeg" alt="Historical Wilson Cemetery">
+        <div class="overlay-text">Historical Wilson Cemetery Database</div>
     </header>
 
+    <!-- Navigation Menu -->
+    <nav>
+        <a href="#princeville">The Town of Princeville</a>
+        <a href="#wilson-cemetery">Cemetery Database</a>
+    </nav>
+
+    <!-- Princeville Section -->
     <section id="princeville" class="section">
         <h1>The Town of Princeville</h1>
-        <p>Explore the rich history of Princeville through interactive maps and insights.</p>
+        <p>Princeville is a historic town, rich in cultural significance and resilience. Explore its history and landmarks through our interactive resources.</p>
         <iframe src="https://cartocollective.blob.core.windows.net/princeville/LeafletSite/Princeville.html"></iframe>
     </section>
 
+    <!-- Additional Photo Section -->
+    <div class="photo-box">
+        <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Freedom%20Hill.jpg" alt="Historic Image of Princeville">
+        <p>An archival photo of Princeville, showcasing its cultural heritage.</p>
+    </div>
+
+    <!-- Wilson Cemetery Section -->
     <section id="wilson-cemetery" class="section">
         <h1>Wilson Cemetery</h1>
         <div id="map-container">
@@ -104,8 +155,7 @@
             <div id="info-pane">
                 <input id="search-bar" type="text" placeholder="Search by name..." style="width: 100%; padding: 8px;">
                 <div id="search-results"></div>
-        
-            </div>            
+            </div>
         </div>
     </section>
 
