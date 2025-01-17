@@ -199,12 +199,14 @@ has changed over time and to see the cemetery databse.</p>
 
         // Add OpenStreetMap layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            minZoom: 8,
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
         // Add Cemetery tile layer
         var Cemetery = L.tileLayer('https://cartocollective.blob.core.windows.net/princeville/Feb17Tiles/{z}/{x}/{y}.png', {
+            minZoom: 8,
             maxZoom: 24,
             maxNativeZoom: 23,
             attribution: 'Cemetery',
