@@ -132,7 +132,7 @@ iframe {
     max-width: 1200px; /* Align with the cemetery section width */
     margin: 40px auto; /* Center the iframe and add space above */
     display: block; /* Ensure proper centering as a block element */
-    height: 600px;
+    height: 800px;
     border: 1px solid #ddd;
 }
     </style>
@@ -266,6 +266,7 @@ searchBar.addEventListener('input', function () {
 
     Gravestones.features.forEach(function (feature) {
         var name = feature.properties.Name.toLowerCase();
+        
         if (name.includes(query)) {
             // Create a clickable result item
             var resultDiv = document.createElement('div');
@@ -309,17 +310,42 @@ searchBar.addEventListener('input', function () {
 
 // Function to update the info pane
 function updateInfoPane(feature) {
-    infoPane.innerHTML = `
-        <h3>${feature.properties.Name}</h3>
+    // Define the properties to display
+    const displayProperties = [
+        "Name",
+        "Additional Info",
+        "Vegetation Cover",
+        "Gravestone Type",
+        "Other Gravestone Type",
+        "Condition",
+        "Legibility",
+        "Point ID",
+        "Month of Birth",
+        "Day of Birth",
+        "Year of Birth",
+        "Month of Death",
+        "Day of Death",
+        "Year of Death"
+    ];
+
+    // Filter and format the content
+// Filter and format the content
+infoPane.innerHTML = `
+        <h3>${feature.properties.Name && feature.properties.Name !== "0" ? feature.properties.Name : "N/A"}</h3>
         <ul>
-            ${Object.entries(feature.properties).map(([key, value]) =>
-                `<li><strong>${key}:</strong> ${value}</li>`
-            ).join('')}
+            ${displayProperties.map(key => {
+                let value = feature.properties[key];
+                // Replace 0 or missing values with "N/A"
+                if (value === 0 || value === undefined || value === null || value === "0") {
+                    value = "N/A";
+                }
+                return `<li><strong>${key}:</strong> ${value}</li>`;
+            }).join("")}
         </ul>
     `;
 }
 
-    </script>
+</script>
 </body>
 </html>
 
