@@ -215,7 +215,10 @@ has changed over time and to see the cemetery databse.</p>
 // Single info pane for both search and click information
 var infoPane = document.getElementById('search-results');
 
-// GeoJSON layer with click interaction
+// Ensure the searchBar element is properly referenced
+var searchBar = document.getElementById('search-bar');
+
+// Ensure gravestonesLayer is defined and interacts correctly
 var gravestonesLayer = L.geoJSON(Gravestones, {
     onEachFeature: function (feature, layer) {
         if (feature.properties && feature.properties.Name) {
@@ -230,11 +233,8 @@ var gravestonesLayer = L.geoJSON(Gravestones, {
             ];
             map.setView(latlng, 23); // Zoom to the selected point
 
-            // Highlight the selected feature
-            if (highlightedLayer) {
-                gravestonesLayer.resetStyle(highlightedLayer); // Reset previous highlight
-            }
-            highlightedLayer = layer;
+            // Reset all highlights and highlight the clicked feature
+            resetAllHighlights();
             layer.setStyle({
                 fillColor: "red",
                 color: "red",
@@ -242,6 +242,7 @@ var gravestonesLayer = L.geoJSON(Gravestones, {
                 radius: 10
             });
 
+            highlightedLayer = layer; // Update the highlighted layer
             // Update the info pane with clicked point details
             updateInfoPane(feature);
         });
@@ -258,20 +259,25 @@ var gravestonesLayer = L.geoJSON(Gravestones, {
     }
 }).addTo(map);
 
+// Function to reset all highlights
+function resetAllHighlights() {
+    gravestonesLayer.eachLayer(function (layer) {
+        gravestonesLayer.resetStyle(layer); // Reset style for each layer
+    });
+}
+
 // Search functionality
-var searchBar = document.getElementById('search-bar');
 searchBar.addEventListener('input', function () {
     var query = searchBar.value.toLowerCase();
     infoPane.innerHTML = ''; // Clear previous content
 
     Gravestones.features.forEach(function (feature) {
-        var name = feature.properties.Name.toLowerCase();
-        
+        var name = feature.properties.Name ? feature.properties.Name.toLowerCase() : "n/a";
         if (name.includes(query)) {
             // Create a clickable result item
             var resultDiv = document.createElement('div');
             resultDiv.className = 'info-details';
-            resultDiv.innerHTML = `<strong>${feature.properties.Name}</strong>`;
+            resultDiv.innerHTML = `<strong>${feature.properties.Name || "N/A"}</strong>`;
             resultDiv.addEventListener('click', function () {
                 var latlng = [
                     feature.geometry.coordinates[1],
@@ -279,7 +285,8 @@ searchBar.addEventListener('input', function () {
                 ];
                 map.setView(latlng, 23); // Zoom to the selected feature
 
-                // Highlight the selected feature on the map
+                // Reset all highlights and highlight the searched feature
+                resetAllHighlights();
                 gravestonesLayer.eachLayer(function (layer) {
                     if (layer.feature.properties.Name === feature.properties.Name) {
                         layer.openPopup();
@@ -329,8 +336,7 @@ function updateInfoPane(feature) {
     ];
 
     // Filter and format the content
-// Filter and format the content
-infoPane.innerHTML = `
+    infoPane.innerHTML = `
         <h3>${feature.properties.Name && feature.properties.Name !== "0" ? feature.properties.Name : "N/A"}</h3>
         <ul>
             ${displayProperties.map(key => {
