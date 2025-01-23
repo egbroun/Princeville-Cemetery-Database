@@ -89,7 +89,7 @@
 
     
         #search-bar {
-            width: 900%;
+            width: 100%;
             padding: 8px;
             margin-bottom: 10px;
         }
@@ -220,13 +220,28 @@ var infoPane = document.getElementById('search-results');
 // Ensure the searchBar element is properly referenced
 var searchBar = document.getElementById('search-bar');
 
-// Ensure gravestonesLayer is defined and interacts correctly
 var gravestonesLayer = L.geoJSON(Gravestones, {
     onEachFeature: function (feature, layer) {
         if (feature.properties && feature.properties.Name) {
-            layer.bindPopup("<strong>" + feature.properties.Name + "</strong>");
-        }
+            // Create the popup content
+            let popupContent = `<strong>${feature.properties.Name}</strong>`;
 
+            // Check if the "LIDAR Scan" field is present and contains a valid URL
+            if (feature.properties["LIDAR Scan"] && feature.properties["LIDAR Scan"] !== "N/A") {
+                popupContent += `
+                    <div style="margin-top: 10px;">
+                        <iframe src="${feature.properties["LIDAR Scan"]}" 
+                                style="width: 100%; height: 300px; border: 1px solid #ddd;" 
+                                title="LIDAR Scan Viewer"></iframe>
+                    </div>`;
+            }
+
+       
+        layer.bindPopup(popupContent, {
+                maxWidth: 600, // Set maximum width
+                minWidth: 400  // Set minimum width
+            });
+        }
         // Handle click events
         layer.on('click', function () {
             var latlng = [
