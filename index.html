@@ -68,6 +68,8 @@
             display: flex;
             margin: 20px 0;
             gap: 20px;
+            background: none;
+            box-shadow: none;
         }
 
         #map {
@@ -122,8 +124,7 @@
     width: 100%;
     height: 300px; /* Set a uniform height for both images */
     object-fit: cover; /* Ensures the image is cropped proportionally */
-    border: 1px solid #ddd;
-    border-radius: 5px;
+
 }
 
 iframe {
@@ -137,6 +138,14 @@ iframe {
 
 .leaflet-popup-content {
     font-size: 16px; 
+}
+
+.text-box {
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 5px;
 }
     </style>
 </head>
@@ -155,6 +164,7 @@ iframe {
 
     <!-- Princeville Section -->
     <section id="princeville" class="section">
+        <div class="text-box">
         <h1>The Town of Princeville</h1>
         <p>Princeville, North Carolina, located south east of Rocky Mount, is a small town recognized as the 
         first independently governed African American community chartered in the United States. Princeville
@@ -165,6 +175,7 @@ iframe {
 in the event of flood damage, but also provide an opportunity for people around the community and country to make
  ancestral connections to those buried in the cemetery. Please use the interactive maps below to explore how Princeville 
 has changed over time and to see the cemetery databse.</p>
+</div>
     </section>
 
     <!-- Additional Photo Section -->
@@ -179,31 +190,32 @@ has changed over time and to see the cemetery databse.</p>
 
 <!-- Description -->
 <section id="princeville" class="section">
-    <h1>Interactive Map</h1>
-    <p>Use the map below to explore the town of Princeville and neighbooring Tarboro to see how this area has changed over the last century.
-        *Note the 1999 layer which shows the immediate aftermath of Hurricane Floyd*
-    </p>
+    <div class="text-box">
+        <h1>Interactive Map</h1>
+        <p>Use the map below to explore the town of Princeville and neighbooring Tarboro to see how this area has changed over the last century.
+            *Note the 1999 layer which shows the immediate aftermath of Hurricane Floyd*
+        </p>
+    </div>
 
-    <!-- i frame -->
-<iframe src="https://cartocollective.blob.core.windows.net/princeville/LeafletSite/Princeville.html"></iframe>
+    <!-- iframe outside of text-box -->
+    <iframe src="https://cartocollective.blob.core.windows.net/princeville/LeafletSite/Princeville.html"></iframe>
 
-<!-- Description -->
-<section id="princeville" class="section">
-    <h2>Wilson Cemetery Database</h2>
-    <p>Either search by name or click any of the points to see a gravestone in the cemetery. If available, a LIDAR scan will
-        appear in the pop up window of your selected point after a few moments. 
-    </p>
+    <div class="text-box">
+        <h2>Wilson Cemetery Database</h2>
+        <p>Either search by name or click any of the points to see a gravestone in the cemetery. If available, a LIDAR scan will
+            appear in the pop up window of your selected point after a few moments. 
+        </p>
+    </div>
 
-    <!-- Wilson Cemetery Section -->
-    <section id="wilson-cemetery" class="section">
-        <div id="map-container">
-            <div id="map"></div>
-            <div id="info-pane">
-                <input id="search-bar" type="text" placeholder="Search by name..." style="width: 100%; padding: 8px;">
-                <div id="search-results"></div>
-            </div>
+    <!-- map container outside of text-box -->
+    <div id="map-container">
+        <div id="map"></div>
+        <div id="info-pane">
+            <input id="search-bar" type="text" placeholder="Search by name..." style="width: 100%; padding: 8px;">
+            <div id="search-results"></div>
         </div>
-    </section>
+    </div>
+</section>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Vectors/W:Lidar.js"></script>
