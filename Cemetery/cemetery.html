@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wilson Cemetery Database</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Times New Roman', Times, serif;
+            background-color: white;
+        }
+
+        header {
+            position: relative;
+            text-align: center;
+            color: white;
+        }
+
+        header img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        header .overlay-text {
+            position: absolute;
+            top: 50%;
+            left: 30%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px;
+            position: relative;
+            display: inline-block;
+            font-size: 18px;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #444;
+        }
+
+        .section {
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        .text-box {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        #map-container {
+            display: flex;
+            margin: 20px 0;
+            gap: 20px;
+            background: none;
+            box-shadow: none;
+        }
+
+        #map {
+            flex: 2;
+            height: 70vh;
+            border: 1px solid #ccc;
+        }
+
+        #info-pane {
+            flex: 1;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            height: 67vh;
+            overflow-y: auto;
+        }
+
+        #search-bar {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        .info-details {
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .info-details:hover {
+            background: #e9ecef;
+        }
+
+        .leaflet-popup-content {
+            font-size: 16px; 
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with photo and overlay text -->
+    <header>
+        <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/IMG_2801.jpeg" alt="Historical Wilson Cemetery">
+        <div class="overlay-text">Historical Wilson Cemetery Database</div>
+    </header>
+
+    <!-- Navigation Menu -->
+    <nav>
+        <a href="index.html">Home</a>
+        <div class="dropdown">
+            <a href="#">Projects ▾
+            <div class="dropdown-content">
+                <a href="cemetery.html">Cemetery Database</a>
+                <a href="#">Community Garden</a>
+                <a href="#">Historical Maps</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cemetery Database Section -->
+    <section id="cemetery-database" class="section">
+        <div class="text-box">
+            <h2>Wilson Cemetery Database</h2>
+            <p>Either search by name or click any of the points to see a gravestone in the cemetery. If available, a LIDAR scan will
+                appear in the pop up window of your selected point after a few moments.</p>
+        </div>
+
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="info-pane">
+                <input id="search-bar" type="text" placeholder="Search by name..." style="width: 100%; padding: 8px;">
+                <div id="search-results"></div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Vectors/W:Lidar.js"></script>
+    <script>
+        var highlightedLayer = null;
+
+        // Initialize map for Wilson Cemetery section
+        var map = L.map('map').setView([35.891264, -77.513262], 18);
+
+        // Add OpenStreetMap layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            minZoom: 8,
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add Cemetery tile layer
+        var Cemetery = L.tileLayer('https://cartocollective.blob.core.windows.net/princeville/Feb17Tiles/{z}/{x}/{y}.png', {
+            minZoom: 8,
+            maxZoom: 24,
+            maxNativeZoom: 23,
+            attribution: 'Cemetery',
+            errorTileUrl: 'https://via.placeholder.com/256?text=Tile+Not+Found'
+        }).addTo(map);
+
+        // Single info pane for both search and click information
+        var infoPane = document.getElementById('search-results');
+        var searchBar = document.getElementById('search-bar');
+
+        var gravestonesLayer = L.geoJSON(Gravestones, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.Name) {
+                    let popupContent = `<strong>${feature.properties.Name}</strong>`;
+                    if (feature.properties["LIDAR Scan"] && feature.properties["LIDAR Scan"] !== "N/A") {
+                        popupContent += `
+                            <div style="margin-top: 10px;">
+                                <iframe src="${feature.properties["LIDAR Scan"]}" 
+                                        style="width: 100%; height: 300px; border: 1px solid #ddd;" 
+                                        title="LIDAR Scan Viewer"></iframe>
+                            </div>`;
+                    }
+                    layer.bindPopup(popupContent, {
+                        maxWidth: 600,
+                        minWidth: 400
+                    });
+                }
+
+                layer.on('click', function () {
+                    var latlng = [
+                        feature.geometry.coordinates[1],
+                        feature.geometry.coordinates[0]
+                    ];
+                    map.setView(latlng, 23);
+                    resetAllHighlights();
+                    layer.setStyle({
+                        fillColor: "red",
+                        color: "red",
+                        weight: 2,
+                        radius: 10
+                    });
+                    highlightedLayer = layer;
+                    updateInfoPane(feature);
+                });
+            },
+            pointToLayer: function (feature, latlng) {
+                return L.circleMarker(latlng, {
+                    radius: 8,
+                    fillColor: "#4794b3",
+                    color: "#000",
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
+            }
+        }).addTo(map);
+
+        function resetAllHighlights() {
+            gravestonesLayer.eachLayer(function (layer) {
+                gravestonesLayer.resetStyle(layer);
+            });
+        }
+
+        searchBar.addEventListener('input', function () {
+            var query = searchBar.value.toLowerCase();
+            infoPane.innerHTML = '';
+
+            Gravestones.features.forEach(function (feature) {
+                var name = feature.properties.Name ? feature.properties.Name.toLowerCase() : "n/a";
+                if (name.includes(query)) {
+                    var resultDiv = document.createElement('div');
+                    resultDiv.className = 'info-details';
+                    resultDiv.innerHTML = `<strong>${feature.properties.Name || "N/A"}</strong>`;
+                    resultDiv.addEventListener('click', function () {
+                        var latlng = [
+                            feature.geometry.coordinates[1],
+                            feature.geometry.coordinates[0]
+                        ];
+                        map.setView(latlng, 23);
+                        resetAllHighlights();
+                        gravestonesLayer.eachLayer(function (layer) {
+                            if (layer.feature.properties.Name === feature.properties.Name) {
+                                layer.openPopup();
+                                layer.setStyle({
+                                    fillColor: "red",
+                                    color: "red",
+                                    weight: 2,
+                                    radius: 10
+                                });
+                                highlightedLayer = layer;
+                            }
+                        });
+                        updateInfoPane(feature);
+                    });
+                    infoPane.appendChild(resultDiv);
+                }
+            });
+
+            if (!infoPane.innerHTML.trim()) {
+                infoPane.innerHTML = '<div class="info-details">No results found</div>';
+            }
+        });
+
+        function updateInfoPane(feature) {
+            const displayProperties = [
+                "Name",
+                "Additional Info",
+                "Vegetation Cover",
+                "Gravestone Type",
+                "Other Gravestone Type",
+                "Condition",
+                "Legibility",
+                "Point ID",
+                "Month of Birth",
+                "Day of Birth",
+                "Year of Birth",
+                "Month of Death",
+                "Day of Death",
+                "Year of Death",
+                "LIDAR Scan"
+            ];
+
+            infoPane.innerHTML = `
+                <h3>${feature.properties.Name && feature.properties.Name !== "0" ? feature.properties.Name : "N/A"}</h3>
+                <ul>
+                    ${displayProperties.map(key => {
+                        let value = feature.properties[key];
+                        if (value === 0 || value === undefined || value === null || value === "0") {
+                            value = "N/A";
+                        }
+                        return `<li><strong>${key}:</strong> ${value}</li>`;
+                    }).join("")}
+                </ul>
+            `;
+        }
+    </script>
+</body>
+</html>
