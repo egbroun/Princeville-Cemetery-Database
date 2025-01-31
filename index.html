@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Princeville History</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body {
             margin: 0;
@@ -122,8 +121,9 @@
 
         /* Accordion Styles */
         .accordion {
-            margin: 20px auto;
             max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
         }
 
         .accordion-item {
@@ -187,65 +187,6 @@
         .accordion-header.active .arrow {
             transform: rotate(180deg);
         }
-
-        #princeville {
-            font-size: 15pt;
-        }
-        #map-container {
-            display: flex;
-            margin: 20px 0;
-            gap: 20px;
-            background: none;
-            box-shadow: none;
-        }
-
-        #map {
-            flex: 2;
-            height: 70vh;
-            border: 1px solid #ccc;
-        }
-
-        #info-pane {
-            flex: 1;
-            padding: 10px;
-            background: #f8f9fa;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            height: 67vh;
-            overflow-y: auto;
-        }
-
-        #search-bar {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-        }
-
-        .info-details {
-            margin-top: 10px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
-            background: #fff;
-            cursor: pointer;
-        }
-
-        .info-details:hover {
-            background: #e9ecef;
-        }
-
-        iframe {
-            width: 100%;
-            max-width: 1200px;
-            margin: 40px auto;
-            display: block;
-            height: 800px;
-            border: 1px solid #ddd;
-        }
-
-        .leaflet-popup-content {
-            font-size: 16px; 
-        }
     </style>
 </head>
 <body>
@@ -273,14 +214,8 @@
         <div class="text-box">
             <h1>The Town of Princeville</h1>
             <p>Princeville, North Carolina, located south east of Rocky Mount, is a small town recognized as the 
-                first independently governed African American community chartered in the United States. Princeville
-                remains around 92% African American to this day and is an important cultural hub for the area. Wilson Cemetery
-            epitomizes this rich history with gravestones dating back from the time of the towns settlement in 1865 to the
-            present day. Due to the Princeville's low elevation along the Tar River, the town is extemely ceceptable to flooding
-            and has sustained significant damage in recent hurricanes. This project aims to not only digitize this cemetery
-        in the event of flood damage, but also provide an opportunity for people around the community and country to make
-         ancestral connections to those buried in the cemetery. Please use the interactive maps below to explore how Princeville 
-        has changed over time and to see the cemetery databse.</p>
+            first independently governed African American community chartered in the United States. Princeville
+            remains around 92% African American to this day and is an important cultural hub for the area.</p>
         </div>
     </section>
 
@@ -354,204 +289,28 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Vectors/W:Lidar.js"></script>
     <script>
-        var highlightedLayer = null;
+        // Get all accordion items
+        const accordionItems = document.querySelectorAll('.accordion-item');
 
-        // Initialize map for Wilson Cemetery section
-        var map = L.map('map').setView([35.891264, -77.513262], 18);
+        // Add click event listener to each accordion item
+        accordionItems.forEach(item => {
+            const header = item.querySelector('.accordion-header');
+            const content = item.querySelector('.accordion-content');
 
-        // Add OpenStreetMap layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            minZoom: 8,
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Add Cemetery tile layer
-        var Cemetery = L.tileLayer('https://cartocollective.blob.core.windows.net/princeville/Feb17Tiles/{z}/{x}/{y}.png', {
-            minZoom: 8,
-            maxZoom: 24,
-            maxNativeZoom: 23,
-            attribution: 'Cemetery',
-            errorTileUrl: 'https://via.placeholder.com/256?text=Tile+Not+Found'
-        }).addTo(map);
-
-        // Single info pane for both search and click information
-        var infoPane = document.getElementById('search-results');
-
-        // Ensure the searchBar element is properly referenced
-        var searchBar = document.getElementById('search-bar');
-
-        var gravestonesLayer = L.geoJSON(Gravestones, {
-            onEachFeature: function (feature, layer) {
-                if (feature.properties && feature.properties.Name) {
-                    // Create the popup content
-                    let popupContent = `<strong>${feature.properties.Name}</strong>`;
-
-                    // Check if the "LIDAR Scan" field is present and contains a valid URL
-                    if (feature.properties["LIDAR Scan"] && feature.properties["LIDAR Scan"] !== "N/A") {
-                        popupContent += `
-                            <div style="margin-top: 10px;">
-                                <iframe src="${feature.properties["LIDAR Scan"]}" 
-                                        style="width: 100%; height: 300px; border: 1px solid #ddd;" 
-                                        title="LIDAR Scan Viewer"></iframe>
-                            </div>`;
-                    }
-
-                    layer.bindPopup(popupContent, {
-                        maxWidth: 600, // Set maximum width
-                        minWidth: 400  // Set minimum width
-                    });
-                }
-                // Handle click events
-                layer.on('click', function () {
-                    var latlng = [
-                        feature.geometry.coordinates[1],
-                        feature.geometry.coordinates[0]
-                    ];
-                    map.setView(latlng, 23); // Zoom to the selected point
-
-                    // Reset all highlights and highlight the clicked feature
-                    resetAllHighlights();
-                    layer.setStyle({
-                        fillColor: "red",
-                        color: "red",
-                        weight: 2,
-                        radius: 10
-                    });
-
-                    highlightedLayer = layer; // Update the highlighted layer
-                    // Update the info pane with clicked point details
-                    updateInfoPane(feature);
-                });
-            },
-            pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, {
-                    radius: 8,
-                    fillColor: "#4794b3",
-                    color: "#000",
-                    weight: 1,
-                    opacity: 1,
-                    fillOpacity: 0.8
-                });
-            }
-        }).addTo(map);
-
-        // Function to reset all highlights
-        function resetAllHighlights() {
-            gravestonesLayer.eachLayer(function (layer) {
-                gravestonesLayer.resetStyle(layer); // Reset style for each layer
-            });
-        }
-
-        // Search functionality
-        searchBar.addEventListener('input', function () {
-            var query = searchBar.value.toLowerCase();
-            infoPane.innerHTML = ''; // Clear previous content
-
-            Gravestones.features.forEach(function (feature) {
-                var name = feature.properties.Name ? feature.properties.Name.toLowerCase() : "n/a";
-                if (name.includes(query)) {
-                    // Create a clickable result item
-                    var resultDiv = document.createElement('div');
-                    resultDiv.className = 'info-details';
-                    resultDiv.innerHTML = `<strong>${feature.properties.Name || "N/A"}</strong>`;
-                    resultDiv.addEventListener('click', function () {
-                        var latlng = [
-                            feature.geometry.coordinates[1],
-                            feature.geometry.coordinates[0]
-                        ];
-                        map.setView(latlng, 23); // Zoom to the selected feature
-
-                        // Reset all highlights and highlight the searched feature
-                        resetAllHighlights();
-                        gravestonesLayer.eachLayer(function (layer) {
-                            if (layer.feature.properties.Name === feature.properties.Name) {
-                                layer.openPopup();
-                                layer.setStyle({
-                                    fillColor: "red",
-                                    color: "red",
-                                    weight: 2,
-                                    radius: 10
-                                });
-                                highlightedLayer = layer; // Update the highlighted layer
-                            }
-                        });
-
-                        // Update the info pane with search-selected feature details
-                        updateInfoPane(feature);
-                    });
-
-                    // Append result to the info pane
-                    infoPane.appendChild(resultDiv);
-                }
-            });
-
-            // Display "No results found" if no matches
-            if (!infoPane.innerHTML.trim()) {
-                infoPane.innerHTML = '<div class="info-details">No results found</div>';
-            }
-        });
-
-        // Function to update the info pane
-        function updateInfoPane(feature) {
-            // Define the properties to display
-            const displayProperties = [
-                "Name",
-                "Additional Info",
-                "Vegetation Cover",
-                "Gravestone Type",
-                "Other Gravestone Type",
-                "Condition",
-                "Legibility",
-                "Point ID",
-                "Month of Birth",
-                "Day of Birth",
-                "Year of Birth",
-                "Month of Death",
-                "Day of Death",
-                "Year of Death",
-                "LIDAR Scan"
-            ];
-
-            // Filter and format the content
-            infoPane.innerHTML = `
-                <h3>${feature.properties.Name && feature.properties.Name !== "0" ? feature.properties.Name : "N/A"}</h3>
-                <ul>
-                    ${displayProperties.map(key => {
-                        let value = feature.properties[key];
-                        // Replace 0 or missing values with "N/A"
-                        if (value === 0 || value === undefined || value === null || value === "0") {
-                            value = "N/A";
-                        }
-                        return `<li><strong>${key}:</strong> ${value}</li>`;
-                    }).join("")}
-                </ul>
-            `;
-        }
-
-        // Accordion functionality
-        const accordionHeaders = document.querySelectorAll('.accordion-header');
-        
-        accordionHeaders.forEach(header => {
             header.addEventListener('click', () => {
-                // Close all other accordion items
-                const currentContent = header.nextElementSibling;
-                const currentlyActive = currentContent.classList.contains('active');
-                
+                // Check if current item is already active
+                const isActive = content.classList.contains('active');
+
                 // Close all accordion items
-                document.querySelectorAll('.accordion-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                document.querySelectorAll('.accordion-header').forEach(header => {
-                    header.classList.remove('active');
+                accordionItems.forEach(otherItem => {
+                    otherItem.querySelector('.accordion-content').classList.remove('active');
+                    otherItem.querySelector('.accordion-header').classList.remove('active');
                 });
 
-                // If the clicked item wasn't already active, open it
-                if (!currentlyActive) {
-                    currentContent.classList.add('active');
+                // If current item wasn't active, open it
+                if (!isActive) {
+                    content.classList.add('active');
                     header.classList.add('active');
                 }
             });
