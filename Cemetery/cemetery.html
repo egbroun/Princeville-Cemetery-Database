@@ -318,14 +318,25 @@
                 "Condition",
                 "Legibility",
                 "Point ID",
-                "Month of Birth",
-                "Day of Birth",
-                "Year of Birth",
-                "Month of Death",
-                "Day of Death",
-                "Year of Death",
                 "LIDAR Scan"
             ];
+
+            let birthDate = "N/A";
+            let deathDate = "N/A";
+
+            // Combine birth date components
+            if (feature.properties["Month of Birth"] || feature.properties["Day of Birth"] || feature.properties["Year of Birth"]) {
+                birthDate = `${feature.properties["Month of Birth"] || "?"}/`;
+                birthDate += `${feature.properties["Day of Birth"] || "?"}/`;
+                birthDate += `${feature.properties["Year of Birth"] || "?"}`;
+            }
+
+            // Combine death date components
+            if (feature.properties["Month of Death"] || feature.properties["Day of Death"] || feature.properties["Year of Death"]) {
+                deathDate = `${feature.properties["Month of Death"] || "?"}/`;
+                deathDate += `${feature.properties["Day of Death"] || "?"}/`;
+                deathDate += `${feature.properties["Year of Death"] || "?"}`;
+            }
 
             infoPane.innerHTML = `
                 <h3>${feature.properties.Name && feature.properties.Name !== "0" ? feature.properties.Name : "N/A"}</h3>
@@ -337,6 +348,8 @@
                         }
                         return `<li><strong>${key}:</strong> ${value}</li>`;
                     }).join("")}
+                    <li><strong>Date of Birth:</strong> ${birthDate}</li>
+                    <li><strong>Date of Death:</strong> ${deathDate}</li>
                 </ul>
             `;
         }
