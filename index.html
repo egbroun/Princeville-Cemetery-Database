@@ -9,6 +9,7 @@
         body {
             margin: 0;
             font-family: 'Times New Roman', Times, serif;
+            background-color: white;
         }
 
         header {
@@ -37,7 +38,7 @@
         nav {
             background-color: #333;
             color: white;
-            padding: 10px;
+            padding: 5px;
             text-align: center;
             position: sticky;
             top: 0;
@@ -49,10 +50,42 @@
             margin: 0 15px;
             text-decoration: none;
             font-weight: bold;
+            padding: 10px;
+            position: relative;
+            display: inline-block;
+            font-size: 18px;
         }
 
-        nav a:hover {
-            text-decoration: underline;
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #444;
         }
 
         .section {
@@ -60,9 +93,103 @@
             margin: 20px auto;
             max-width: 1200px;
         }
-     
+
+        .text-box {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .photo-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .photo-box {
+            text-align: center;
+            max-width: 45%;
+        }
+
+        .photo-box img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        /* Accordion Styles */
+        .accordion {
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        .accordion-item {
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            background-color: #f8f9fa;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .accordion-header:hover {
+            background-color: #e9ecef;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: white;
+        }
+
+        .accordion-content.active {
+            max-height: 1000px;
+            padding: 20px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .content-text {
+            flex: 1;
+        }
+
+        .content-image {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .content-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .arrow {
+            transition: transform 0.3s;
+        }
+
+        .accordion-header.active .arrow {
+            transform: rotate(180deg);
+        }
+
         #princeville {
-    font-size: 15pt;
+            font-size: 15pt;
         }
         #map-container {
             display: flex;
@@ -88,7 +215,6 @@
             overflow-y: auto;
         }
 
-    
         #search-bar {
             width: 100%;
             padding: 8px;
@@ -108,114 +234,125 @@
             background: #e9ecef;
         }
 
-        .photo-row {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin: 20px 0;
-}
+        iframe {
+            width: 100%;
+            max-width: 1200px;
+            margin: 40px auto;
+            display: block;
+            height: 800px;
+            border: 1px solid #ddd;
+        }
 
-.photo-box {
-    text-align: center;
-    max-width: 45%; /* Adjust width for the desired size */
-}
-
-.photo-box img {
-    width: 100%;
-    height: 300px; /* Set a uniform height for both images */
-    object-fit: cover; /* Ensures the image is cropped proportionally */
-
-}
-
-iframe {
-    width: 100%;
-    max-width: 1200px; /* Align with the cemetery section width */
-    margin: 40px auto; /* Center the iframe and add space above */
-    display: block; /* Ensure proper centering as a block element */
-    height: 800px;
-    border: 1px solid #ddd;
-}
-
-.leaflet-popup-content {
-    font-size: 16px; 
-}
-
-.text-box {
-    background-color: white;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 5px;
-}
+        .leaflet-popup-content {
+            font-size: 16px; 
+        }
     </style>
 </head>
 <body>
     <!-- Header with photo and overlay text -->
     <header>
         <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/IMG_2801.jpeg" alt="Historical Wilson Cemetery">
-        <div class="overlay-text">Historical Wilson Cemetery Database</div>
+        <div class="overlay-text">Princeville History Project</div>
     </header>
 
     <!-- Navigation Menu -->
     <nav>
-        <a href="#princeville">The Town of Princeville</a>
-        <a href="#wilson-cemetery">Cemetery Database</a>
+        <a href="index.html">Home</a>
+        <div class="dropdown">
+            <a href="#">Projects ▾</a>
+            <div class="dropdown-content">
+                <a href="Cemetery/cemetery.html">Cemetery Database</a>
+                <a href="#">Community Garden</a>
+                <a href="Maps/maps.html">Historical Maps</a>
+            </div>
+        </div>
     </nav>
 
-    <!-- Princeville Section -->
-    <section id="princeville" class="section">
+    <!-- Main Content -->
+    <section class="section">
         <div class="text-box">
-        <h1>The Town of Princeville</h1>
-        <p>Princeville, North Carolina, located south east of Rocky Mount, is a small town recognized as the 
-        first independently governed African American community chartered in the United States. Princeville
-        remains around 92% African American to this day and is an important cultural hub for the area. Wilson Cemetery
-    epitomizes this rich history with gravestones dating back from the time of the towns settlement in 1865 to the
-    present day. Due to the Princeville's low elevation along the Tar River, the town is extemely ceceptable to flooding
-    and has sustained significant damage in recent hurricanes. This project aims to not only digitize this cemetery
-in the event of flood damage, but also provide an opportunity for people around the community and country to make
- ancestral connections to those buried in the cemetery. Please use the interactive maps below to explore how Princeville 
-has changed over time and to see the cemetery databse.</p>
-</div>
+            <h1>The Town of Princeville</h1>
+            <p>Princeville, North Carolina, located south east of Rocky Mount, is a small town recognized as the 
+                first independently governed African American community chartered in the United States. Princeville
+                remains around 92% African American to this day and is an important cultural hub for the area. Wilson Cemetery
+            epitomizes this rich history with gravestones dating back from the time of the towns settlement in 1865 to the
+            present day. Due to the Princeville's low elevation along the Tar River, the town is extemely ceceptable to flooding
+            and has sustained significant damage in recent hurricanes. This project aims to not only digitize this cemetery
+        in the event of flood damage, but also provide an opportunity for people around the community and country to make
+         ancestral connections to those buried in the cemetery. Please use the interactive maps below to explore how Princeville 
+        has changed over time and to see the cemetery databse.</p>
+        </div>
     </section>
 
-    <!-- Additional Photo Section -->
-<div class="photo-row">
-    <div class="photo-box">
-        <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Freedom%20Hill.jpg" alt="Historic Image of Princeville">
-    </div>
-    <div class="photo-box">
-        <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Hurricane-Floyd-flooding-in-Princeville-J.-Jordan-US-Army-Corps-of-Engineers.webp" alt="Another Historic Image">
-    </div>
-</div>
-
-<!-- Description -->
-<section id="princeville" class="section">
-    <div class="text-box">
-        <h1>Interactive Map</h1>
-        <p>Use the map below to explore the town of Princeville and neighbooring Tarboro to see how this area has changed over the last century.
-            *Note the 1999 layer which shows the immediate aftermath of Hurricane Floyd*
-        </p>
-    </div>
-
-    <!-- iframe outside of text-box -->
-    <iframe src="https://cartocollective.blob.core.windows.net/princeville/LeafletSite/Princeville.html"></iframe>
-
-    <div class="text-box">
-        <h2>Wilson Cemetery Database</h2>
-        <p>Either search by name or click any of the points to see a gravestone in the cemetery. If available, a LIDAR scan will
-            appear in the pop up window of your selected point after a few moments. 
-        </p>
-    </div>
-
-    <!-- map container outside of text-box -->
-    <div id="map-container">
-        <div id="map"></div>
-        <div id="info-pane">
-            <input id="search-bar" type="text" placeholder="Search by name..." style="width: 100%; padding: 8px;">
-            <div id="search-results"></div>
+    <!-- Photo Row -->
+    <div class="photo-row">
+        <div class="photo-box">
+            <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Freedom%20Hill.jpg" alt="Historic Image of Princeville">
+        </div>
+        <div class="photo-box">
+            <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Hurricane-Floyd-flooding-in-Princeville-J.-Jordan-US-Army-Corps-of-Engineers.webp" alt="Another Historic Image">
         </div>
     </div>
-</section>
+
+    <!-- Accordion Sections -->
+    <div class="accordion">
+        <!-- Our Team Section -->
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>Our Team</h2>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="content-wrapper">
+                    <div class="content-text">
+                        <p>Our team consists of dedicated researchers, historians, and community members working together to preserve and document Princeville's rich history.</p>
+                        <!-- Add more team content here -->
+                    </div>
+                    <div class="content-image">
+                        <img src="path_to_team_image.jpg" alt="Our Team">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our Projects Section -->
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>Our Projects</h2>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="content-wrapper">
+                    <div class="content-text">
+                        <p>We are engaged in various projects to document and preserve Princeville's history, including the Cemetery Database, Community Garden, and Historical Maps.</p>
+                        <!-- Add more projects content here -->
+                    </div>
+                    <div class="content-image">
+                        <img src="path_to_projects_image.jpg" alt="Our Projects">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our Impacts Section -->
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <h2>Our Impacts</h2>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="content-wrapper">
+                    <div class="content-text">
+                        <p>Through our work, we've helped preserve important historical records, engage the community, and ensure Princeville's legacy for future generations.</p>
+                        <!-- Add more impacts content here -->
+                    </div>
+                    <div class="content-image">
+                        <img src="path_to_impacts_image.jpg" alt="Our Impacts">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Vectors/W:Lidar.js"></script>
@@ -241,163 +378,185 @@ has changed over time and to see the cemetery databse.</p>
             errorTileUrl: 'https://via.placeholder.com/256?text=Tile+Not+Found'
         }).addTo(map);
 
+        // Single info pane for both search and click information
+        var infoPane = document.getElementById('search-results');
 
-// Single info pane for both search and click information
-var infoPane = document.getElementById('search-results');
+        // Ensure the searchBar element is properly referenced
+        var searchBar = document.getElementById('search-bar');
 
-// Ensure the searchBar element is properly referenced
-var searchBar = document.getElementById('search-bar');
+        var gravestonesLayer = L.geoJSON(Gravestones, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.Name) {
+                    // Create the popup content
+                    let popupContent = `<strong>${feature.properties.Name}</strong>`;
 
-var gravestonesLayer = L.geoJSON(Gravestones, {
-    onEachFeature: function (feature, layer) {
-        if (feature.properties && feature.properties.Name) {
-            // Create the popup content
-            let popupContent = `<strong>${feature.properties.Name}</strong>`;
+                    // Check if the "LIDAR Scan" field is present and contains a valid URL
+                    if (feature.properties["LIDAR Scan"] && feature.properties["LIDAR Scan"] !== "N/A") {
+                        popupContent += `
+                            <div style="margin-top: 10px;">
+                                <iframe src="${feature.properties["LIDAR Scan"]}" 
+                                        style="width: 100%; height: 300px; border: 1px solid #ddd;" 
+                                        title="LIDAR Scan Viewer"></iframe>
+                            </div>`;
+                    }
 
-            // Check if the "LIDAR Scan" field is present and contains a valid URL
-            if (feature.properties["LIDAR Scan"] && feature.properties["LIDAR Scan"] !== "N/A") {
-                popupContent += `
-                    <div style="margin-top: 10px;">
-                        <iframe src="${feature.properties["LIDAR Scan"]}" 
-                                style="width: 100%; height: 300px; border: 1px solid #ddd;" 
-                                title="LIDAR Scan Viewer"></iframe>
-                    </div>`;
+                    layer.bindPopup(popupContent, {
+                        maxWidth: 600, // Set maximum width
+                        minWidth: 400  // Set minimum width
+                    });
+                }
+                // Handle click events
+                layer.on('click', function () {
+                    var latlng = [
+                        feature.geometry.coordinates[1],
+                        feature.geometry.coordinates[0]
+                    ];
+                    map.setView(latlng, 23); // Zoom to the selected point
+
+                    // Reset all highlights and highlight the clicked feature
+                    resetAllHighlights();
+                    layer.setStyle({
+                        fillColor: "red",
+                        color: "red",
+                        weight: 2,
+                        radius: 10
+                    });
+
+                    highlightedLayer = layer; // Update the highlighted layer
+                    // Update the info pane with clicked point details
+                    updateInfoPane(feature);
+                });
+            },
+            pointToLayer: function (feature, latlng) {
+                return L.circleMarker(latlng, {
+                    radius: 8,
+                    fillColor: "#4794b3",
+                    color: "#000",
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
             }
+        }).addTo(map);
 
-       
-        layer.bindPopup(popupContent, {
-                maxWidth: 600, // Set maximum width
-                minWidth: 400  // Set minimum width
+        // Function to reset all highlights
+        function resetAllHighlights() {
+            gravestonesLayer.eachLayer(function (layer) {
+                gravestonesLayer.resetStyle(layer); // Reset style for each layer
             });
         }
-        // Handle click events
-        layer.on('click', function () {
-            var latlng = [
-                feature.geometry.coordinates[1],
-                feature.geometry.coordinates[0]
-            ];
-            map.setView(latlng, 23); // Zoom to the selected point
 
-            // Reset all highlights and highlight the clicked feature
-            resetAllHighlights();
-            layer.setStyle({
-                fillColor: "red",
-                color: "red",
-                weight: 2,
-                radius: 10
+        // Search functionality
+        searchBar.addEventListener('input', function () {
+            var query = searchBar.value.toLowerCase();
+            infoPane.innerHTML = ''; // Clear previous content
+
+            Gravestones.features.forEach(function (feature) {
+                var name = feature.properties.Name ? feature.properties.Name.toLowerCase() : "n/a";
+                if (name.includes(query)) {
+                    // Create a clickable result item
+                    var resultDiv = document.createElement('div');
+                    resultDiv.className = 'info-details';
+                    resultDiv.innerHTML = `<strong>${feature.properties.Name || "N/A"}</strong>`;
+                    resultDiv.addEventListener('click', function () {
+                        var latlng = [
+                            feature.geometry.coordinates[1],
+                            feature.geometry.coordinates[0]
+                        ];
+                        map.setView(latlng, 23); // Zoom to the selected feature
+
+                        // Reset all highlights and highlight the searched feature
+                        resetAllHighlights();
+                        gravestonesLayer.eachLayer(function (layer) {
+                            if (layer.feature.properties.Name === feature.properties.Name) {
+                                layer.openPopup();
+                                layer.setStyle({
+                                    fillColor: "red",
+                                    color: "red",
+                                    weight: 2,
+                                    radius: 10
+                                });
+                                highlightedLayer = layer; // Update the highlighted layer
+                            }
+                        });
+
+                        // Update the info pane with search-selected feature details
+                        updateInfoPane(feature);
+                    });
+
+                    // Append result to the info pane
+                    infoPane.appendChild(resultDiv);
+                }
             });
 
-            highlightedLayer = layer; // Update the highlighted layer
-            // Update the info pane with clicked point details
-            updateInfoPane(feature);
+            // Display "No results found" if no matches
+            if (!infoPane.innerHTML.trim()) {
+                infoPane.innerHTML = '<div class="info-details">No results found</div>';
+            }
         });
-    },
-    pointToLayer: function (feature, latlng) {
-        return L.circleMarker(latlng, {
-            radius: 8,
-            fillColor: "#4794b3",
-            color: "#000",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
-        });
-    }
-}).addTo(map);
 
-// Function to reset all highlights
-function resetAllHighlights() {
-    gravestonesLayer.eachLayer(function (layer) {
-        gravestonesLayer.resetStyle(layer); // Reset style for each layer
-    });
-}
+        // Function to update the info pane
+        function updateInfoPane(feature) {
+            // Define the properties to display
+            const displayProperties = [
+                "Name",
+                "Additional Info",
+                "Vegetation Cover",
+                "Gravestone Type",
+                "Other Gravestone Type",
+                "Condition",
+                "Legibility",
+                "Point ID",
+                "Month of Birth",
+                "Day of Birth",
+                "Year of Birth",
+                "Month of Death",
+                "Day of Death",
+                "Year of Death",
+                "LIDAR Scan"
+            ];
 
-// Search functionality
-searchBar.addEventListener('input', function () {
-    var query = searchBar.value.toLowerCase();
-    infoPane.innerHTML = ''; // Clear previous content
+            // Filter and format the content
+            infoPane.innerHTML = `
+                <h3>${feature.properties.Name && feature.properties.Name !== "0" ? feature.properties.Name : "N/A"}</h3>
+                <ul>
+                    ${displayProperties.map(key => {
+                        let value = feature.properties[key];
+                        // Replace 0 or missing values with "N/A"
+                        if (value === 0 || value === undefined || value === null || value === "0") {
+                            value = "N/A";
+                        }
+                        return `<li><strong>${key}:</strong> ${value}</li>`;
+                    }).join("")}
+                </ul>
+            `;
+        }
 
-    Gravestones.features.forEach(function (feature) {
-        var name = feature.properties.Name ? feature.properties.Name.toLowerCase() : "n/a";
-        if (name.includes(query)) {
-            // Create a clickable result item
-            var resultDiv = document.createElement('div');
-            resultDiv.className = 'info-details';
-            resultDiv.innerHTML = `<strong>${feature.properties.Name || "N/A"}</strong>`;
-            resultDiv.addEventListener('click', function () {
-                var latlng = [
-                    feature.geometry.coordinates[1],
-                    feature.geometry.coordinates[0]
-                ];
-                map.setView(latlng, 23); // Zoom to the selected feature
-
-                // Reset all highlights and highlight the searched feature
-                resetAllHighlights();
-                gravestonesLayer.eachLayer(function (layer) {
-                    if (layer.feature.properties.Name === feature.properties.Name) {
-                        layer.openPopup();
-                        layer.setStyle({
-                            fillColor: "red",
-                            color: "red",
-                            weight: 2,
-                            radius: 10
-                        });
-                        highlightedLayer = layer; // Update the highlighted layer
-                    }
+        // Accordion functionality
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                // Close all other accordion items
+                const currentContent = header.nextElementSibling;
+                const currentlyActive = currentContent.classList.contains('active');
+                
+                // Close all accordion items
+                document.querySelectorAll('.accordion-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.querySelectorAll('.accordion-header').forEach(header => {
+                    header.classList.remove('active');
                 });
 
-                // Update the info pane with search-selected feature details
-                updateInfoPane(feature);
-            });
-
-            // Append result to the info pane
-            infoPane.appendChild(resultDiv);
-        }
-    });
-
-    // Display "No results found" if no matches
-    if (!infoPane.innerHTML.trim()) {
-        infoPane.innerHTML = '<div class="info-details">No results found</div>';
-    }
-});
-
-// Function to update the info pane
-function updateInfoPane(feature) {
-    // Define the properties to display
-    const displayProperties = [
-        "Name",
-        "Additional Info",
-        "Vegetation Cover",
-        "Gravestone Type",
-        "Other Gravestone Type",
-        "Condition",
-        "Legibility",
-        "Point ID",
-        "Month of Birth",
-        "Day of Birth",
-        "Year of Birth",
-        "Month of Death",
-        "Day of Death",
-        "Year of Death",
-        "LIDAR Scan"
-    ];
-
-    // Filter and format the content
-    infoPane.innerHTML = `
-        <h3>${feature.properties.Name && feature.properties.Name !== "0" ? feature.properties.Name : "N/A"}</h3>
-        <ul>
-            ${displayProperties.map(key => {
-                let value = feature.properties[key];
-                // Replace 0 or missing values with "N/A"
-                if (value === 0 || value === undefined || value === null || value === "0") {
-                    value = "N/A";
+                // If the clicked item wasn't already active, open it
+                if (!currentlyActive) {
+                    currentContent.classList.add('active');
+                    header.classList.add('active');
                 }
-                return `<li><strong>${key}:</strong> ${value}</li>`;
-            }).join("")}
-        </ul>
-    `;
-}
-
-</script>
+            });
+        });
+    </script>
 </body>
 </html>
 
