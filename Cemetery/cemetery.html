@@ -311,45 +311,65 @@
         function updateInfoPane(feature) {
             const displayProperties = [
                 "Name",
-                "Additional Info",
-                "Vegetation Cover",
                 "Gravestone Type",
-                "Other Gravestone Type",
                 "Condition",
                 "Legibility",
-                "Point ID",
-                "LIDAR Scan"
+                "Vegetation Cover",
+                "Additional Info",
+                "Point ID"
             ];
 
-            let birthDate = "N/A";
-            let deathDate = "N/A";
+            let birthDate = "Not Given";
+            let deathDate = "Not Given";
+
+            // Function to format date component
+            function formatDateComponent(value) {
+                if (value === "0" || value === 0) return "Illegible";
+                if (value === "-1" || value === -1) return "Not Given";
+                return value || "Not Given";
+            }
 
             // Combine birth date components
             if (feature.properties["Month of Birth"] || feature.properties["Day of Birth"] || feature.properties["Year of Birth"]) {
-                birthDate = `${feature.properties["Month of Birth"] || "?"}/`;
-                birthDate += `${feature.properties["Day of Birth"] || "?"}/`;
-                birthDate += `${feature.properties["Year of Birth"] || "?"}`;
+                const month = formatDateComponent(feature.properties["Month of Birth"]);
+                const day = formatDateComponent(feature.properties["Day of Birth"]);
+                const year = formatDateComponent(feature.properties["Year of Birth"]);
+                
+                if (month !== "Not Given" || day !== "Not Given" || year !== "Not Given") {
+                    birthDate = `${month}/${day}/${year}`;
+                }
             }
 
             // Combine death date components
             if (feature.properties["Month of Death"] || feature.properties["Day of Death"] || feature.properties["Year of Death"]) {
-                deathDate = `${feature.properties["Month of Death"] || "?"}/`;
-                deathDate += `${feature.properties["Day of Death"] || "?"}/`;
-                deathDate += `${feature.properties["Year of Death"] || "?"}`;
+                const month = formatDateComponent(feature.properties["Month of Death"]);
+                const day = formatDateComponent(feature.properties["Day of Death"]);
+                const year = formatDateComponent(feature.properties["Year of Death"]);
+                
+                if (month !== "Not Given" || day !== "Not Given" || year !== "Not Given") {
+                    deathDate = `${month}/${day}/${year}`;
+                }
+            }
+
+            // Get 3D model value
+            let modelValue = feature.properties["LIDAR Scan"];
+            if (modelValue === 0 || modelValue === undefined || modelValue === null || modelValue === "0") {
+                modelValue = "N/A";
             }
 
             infoPane.innerHTML = `
                 <h3>${feature.properties.Name && feature.properties.Name !== "0" ? feature.properties.Name : "N/A"}</h3>
                 <ul>
-                    ${displayProperties.map(key => {
+                    <li><strong>Date of Birth:</strong> ${birthDate}</li>
+                    <li><strong>Date of Death:</strong> ${deathDate}</li>
+                    <li><strong>3D Gravestone Model:</strong> ${modelValue}</li>
+                    ${displayProperties.slice(1).map(key => {
                         let value = feature.properties[key];
                         if (value === 0 || value === undefined || value === null || value === "0") {
                             value = "N/A";
                         }
                         return `<li><strong>${key}:</strong> ${value}</li>`;
                     }).join("")}
-                    <li><strong>Date of Birth:</strong> ${birthDate}</li>
-                    <li><strong>Date of Death:</strong> ${deathDate}</li>
                 </ul>
             `;
         }
