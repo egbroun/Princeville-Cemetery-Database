@@ -90,7 +90,7 @@
         .section {
             padding: 20px;
             margin: 20px auto;
-            max-width: 1200px;
+            max-width: 1500px;
         }
 
         .text-box {
@@ -155,7 +155,7 @@
         }
 
         .accordion-content.active {
-            max-height: 1000px;
+            max-height: 1200px;
             padding: 20px;
         }
 
@@ -167,6 +167,7 @@
 
         .content-text {
             flex: 1;
+            font-size: 16pt;
         }
 
         .content-image {
@@ -186,6 +187,37 @@
 
         .accordion-header.active .arrow {
             transform: rotate(180deg);
+        }
+
+        .team-content {
+            padding: 20px 0;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .content-wrapper:last-child {
+            margin-bottom: 0;
+        }
+
+        .content-text {
+            flex: 1;
+        }
+
+        .content-image {
+            flex: 1;
+            max-width: 35%;
+        }
+
+        .content-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -214,8 +246,14 @@
         <div class="text-box">
             <h1>The Town of Princeville</h1>
             <p>Princeville, North Carolina, located south east of Rocky Mount, is a small town recognized as the 
-            first independently governed African American community chartered in the United States. Princeville
-            remains around 92% African American to this day and is an important cultural hub for the area.</p>
+                first independently governed African American community chartered in the United States. Princeville
+                remains around 92% African American to this day and is an important cultural hub for the area. Wilson Cemetery
+            epitomizes this rich history with gravestones dating back from the time of the towns settlement in 1865 to the
+            present day. Due to the Princeville's low elevation along the Tar River, the town is extemely ceceptable to flooding
+            and has sustained significant damage in recent hurricanes. This project aims to not only digitize this cemetery
+        in the event of flood damage, but also provide an opportunity for people around the community and country to make
+         ancestral connections to those buried in the cemetery. Please use the interactive maps below to explore how Princeville 
+        has changed over time and to see the cemetery databse</p>
         </div>
     </section>
 
@@ -225,7 +263,7 @@
             <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Freedom%20Hill.jpg" alt="Historic Image of Princeville">
         </div>
         <div class="photo-box">
-            <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Hurricane-Floyd-flooding-in-Princeville-J.-Jordan-US-Army-Corps-of-Engineers.webp" alt="Another Historic Image">
+            <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/20201115_PRINCEVILLE_006.jpeg" alt="Another Historic Image">
         </div>
     </div>
 
@@ -238,13 +276,44 @@
                 <span class="arrow">▼</span>
             </div>
             <div class="accordion-content">
-                <div class="content-wrapper">
-                    <div class="content-text">
-                        <p>Our team consists of dedicated researchers, historians, and community members working together to preserve and document Princeville's rich history.</p>
-                        <!-- Add more team content here -->
+                <div class="team-content">
+                    <!-- First Row - Image Left -->
+                    <div class="content-wrapper">
+                        <div class="content-image">
+                            <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/IMG_9013.jpeg" alt="UNC Rural Team">
+                        </div>
+                        <div class="content-text">
+                            <p>This project is a partnership between students and professors at
+                            the University of North Carolina Chapel Hill through UNC Rural and the talented team at Freedom Org.</p>
+                        </div>
                     </div>
-                    <div class="content-image">
-                        <img src="path_to_team_image.jpg" alt="Our Team">
+
+                    <!-- Second Row - Image Right -->
+                    <div class="content-wrapper">
+                        <div class="content-text">
+                            <p>Founded in 2019 at the UNC Chapel Hill, UNC Rural serves the state of North Carolina by connecting rural communities with campus partners 
+                            and resources. The organization offers programs and tools to strengthen partnerships that advance 
+                            rural well-being. With the support of UNC Rural, Professor of Geography Javier Arce-Nazario
+                            led a small group of students to help execute the vision of Freedom Org and community
+                            members in preserving and engaging the community of Princeville.</p>
+                        </div>
+                        <div class="content-image">
+                            <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/IMG_3183.jpeg" alt="UNC Team Working">
+                        </div>
+                    </div>
+
+                    <!-- Third Row - Image Left -->
+                    <div class="content-wrapper">
+                        <div class="content-image">
+                            <img src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Photos/Screenshot%202025-02-06%20at%202.57.44%20PM.png" alt="Freedom Org Logo">
+                        </div>
+                        <div class="content-text">
+                            <p>Freedom Org is a community development organization investing in communities that have been historically disinvested,
+                            fostering growth, empowerment, and sustainable change. They collaborate with local, state, and federal agencies in developing holistic 
+                            and all-encompassing solutions for community development. Their primary focus is 
+                            on historically Black and/or low-moderate income communities, with an unwavering 
+                            commitment to fostering self-sufficiency and empowerment economic freedom.</p>
+                        </div>
                     </div>
                 </div>
             </div>

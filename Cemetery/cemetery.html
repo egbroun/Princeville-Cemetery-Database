@@ -188,7 +188,7 @@
     </section>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Vectors/W:Lidar.js"></script>
+    <script src="https://cartocollective.blob.core.windows.net/princeville/Cemetery_Database/Vectors/Points_w_SS.js"></script>
     <script>
         var highlightedLayer = null;
 
@@ -219,12 +219,22 @@
             onEachFeature: function (feature, layer) {
                 if (feature.properties && feature.properties.Name) {
                     let popupContent = `<strong>${feature.properties.Name}</strong>`;
-                    if (feature.properties["LIDAR Scan"] && feature.properties["LIDAR Scan"] !== "N/A") {
+                    if (feature.properties["LIDAR SS"] && feature.properties["LIDAR SS"] !== "N/A") {
                         popupContent += `
                             <div style="margin-top: 10px;">
-                                <iframe src="${feature.properties["LIDAR Scan"]}" 
-                                        style="width: 100%; height: 300px; border: 1px solid #ddd;" 
-                                        title="LIDAR Scan Viewer"></iframe>
+                                <img src="${feature.properties["LIDAR SS"]}" 
+                                     style="width: 100%; max-width: 400px; height: auto; border: 1px solid #ddd;" 
+                                     alt="Gravestone Screenshot">
+                            </div>`;
+                    }
+                    if (feature.properties["LIDAR Scan"] && feature.properties["LIDAR Scan"] !== "N/A") {
+                        popupContent += `
+                            <div style="margin-top: 10px; text-align: center;">
+                                <a href="${feature.properties["LIDAR Scan"]}" 
+                                   target="_blank" 
+                                   style="color: #4794b3; text-decoration: underline;">
+                                   View full 3D model here
+                                </a>
                             </div>`;
                     }
                     layer.bindPopup(popupContent, {
@@ -238,7 +248,14 @@
                         feature.geometry.coordinates[1],
                         feature.geometry.coordinates[0]
                     ];
-                    map.setView(latlng, 23);
+                    // Calculate offset to position point near bottom
+                    var containerHeight = map.getContainer().clientHeight;
+                    var offset = containerHeight * 0.15; // Reduced to 15% from bottom
+                    var point = map.project(latlng, 23);
+                    point.y -= offset;
+                    var newCenter = map.unproject(point, 23);
+                    
+                    map.setView(newCenter, 23);
                     resetAllHighlights();
                     layer.setStyle({
                         fillColor: "red",
@@ -283,7 +300,14 @@
                             feature.geometry.coordinates[1],
                             feature.geometry.coordinates[0]
                         ];
-                        map.setView(latlng, 23);
+                        // Calculate offset to position point near bottom
+                        var containerHeight = map.getContainer().clientHeight;
+                        var offset = containerHeight * 0.15; // Reduced to 15% from bottom
+                        var point = map.project(latlng, 23);
+                        point.y -= offset;
+                        var newCenter = map.unproject(point, 23);
+                        
+                        map.setView(newCenter, 23);
                         resetAllHighlights();
                         gravestonesLayer.eachLayer(function (layer) {
                             if (layer.feature.properties.Name === feature.properties.Name) {
