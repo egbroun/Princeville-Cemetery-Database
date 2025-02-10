@@ -108,6 +108,12 @@
             border: 1px solid #ddd;
             margin-top: 20px;
         }
+
+        #historical-map {
+            height: 800px;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -138,6 +144,16 @@
         </div>
 
         <div id="map"></div>
+    </section>
+
+    <!-- Historical Exploration Section -->
+    <section class="section">
+        <div class="text-box">
+            <h2>Explore Princeville Throughout the Decades</h2>
+            <p>Witness the evolution of Princeville from 1903 to 2013 through historical maps and aerial photography. These layers show the growth and changes in the town's landscape over more than a century, from early topographic maps to modern aerial imagery.</p>
+        </div>
+
+        <div id="historical-map"></div>
     </section>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -188,6 +204,87 @@
 
         // Add default layer
         tile1999.addTo(map);
+
+        // Create the historical exploration map
+        var historicalMap = L.map('historical-map', {
+            maxBounds: [
+                [35.84211, -77.62514], // Southwest
+                [35.96579, -77.46587]  // Northeast
+            ],
+            minZoom: 8,
+            touchZoom: true,
+            scrollWheelZoom: true,
+        }).setView([35.89103183195343, -77.53371477127077], 15);
+
+        // Add OpenStreetMap base layer
+        var osmLayerHistorical = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 22,
+            maxNativeZoom: 20,
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(historicalMap);
+
+        // Define historical layers
+        var layer1903 = L.tileLayer('https://cartocollective.blob.core.windows.net/princeville/Topo%20Maps/1903/Topo1903/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            maxNativeZoom: 18,
+            attribution: '1903 Topo Map'
+        });
+
+        var layer1957 = L.tileLayer('https://cartocollective.blob.core.windows.net/princeville/Arerial%20Photography/1957/AP1957/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            maxNativeZoom: 18,
+            attribution: '1957 Aerial Photography'
+        });
+
+        var layer1977 = L.tileLayer('https://cartocollective.blob.core.windows.net/princeville/Arerial%20Photography/1977/AP1977/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            maxNativeZoom: 18,
+            attribution: '1977 Aerial Photography'
+        });
+
+        var layer1999 = L.tileLayer('https://cartocollective.blob.core.windows.net/princeville/Arerial%20Photography/1999/AP1999/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            maxNativeZoom: 18,
+            attribution: '1999 Aerial Photography'
+        });
+
+        var layer2002 = L.tileLayer('https://cartocollective.blob.core.windows.net/princeville/Arerial%20Photography/2002/AP2002/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            maxNativeZoom: 18,
+            attribution: '2002 Aerial Photography'
+        });
+
+        var layer2008 = L.tileLayer('https://cartocollective.blob.core.windows.net/princeville/Arerial%20Photography/2008/AP2008/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            maxNativeZoom: 18,
+            attribution: '2008 Aerial Photography'
+        });
+
+        var layer2013 = L.tileLayer('https://cartocollective.blob.core.windows.net/princeville/Arerial%20Photography/2013/AP2013/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            maxNativeZoom: 18,
+            attribution: '2013 Aerial Photography'
+        });
+
+        // Create overlay layers object
+        var historicalOverlays = {
+            "1903 Topographic Map": layer1903,
+            "1957 Aerial Photography": layer1957,
+            "1977 Aerial Photography": layer1977,
+            "1999 Aerial Photography": layer1999,
+            "2002 Aerial Photography": layer2002,
+            "2008 Aerial Photography": layer2008,
+            "2013 Aerial Photography": layer2013
+        };
+
+        // Add layer control and opacity control
+        L.control.layers(null, historicalOverlays, { position: 'topright', collapsed: false }).addTo(historicalMap);
+        L.control.opacity(historicalOverlays, {
+            label: 'Layer Opacity'
+        }).addTo(historicalMap);
+
+        // Add 1903 layer by default
+        layer1903.addTo(historicalMap);
     </script>
 </body>
 </html>
