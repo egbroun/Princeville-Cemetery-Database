@@ -148,6 +148,71 @@
         .leaflet-popup-content {
             font-size: 16px; 
         }
+
+        /* Mobile Responsive Styles */
+        @media screen and (max-width: 768px) {
+            header .overlay-text {
+                font-size: 2rem;
+                left: 50%;
+                width: 80%;
+            }
+
+            #map-container {
+                flex-direction: column;
+            }
+
+            #map {
+                height: 50vh;
+                width: 100%;
+            }
+
+            #info-pane {
+                width: 100%;
+                height: auto;
+                max-height: 30vh;
+            }
+
+            .leaflet-popup-content {
+                width: 90vw !important;
+                max-width: 400px;
+            }
+
+            .leaflet-popup-content img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            /* Adjust search results for better touch interaction */
+            .info-details {
+                padding: 15px;
+                margin: 8px 0;
+            }
+
+            /* Adjust popup position for portrait mode */
+            .leaflet-popup {
+                margin-bottom: 50px;
+            }
+        }
+
+        /* Landscape orientation specific adjustments */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            #map {
+                height: 70vh;
+            }
+
+            #info-pane {
+                max-height: 20vh;
+            }
+
+            header img {
+                height: 200px;
+            }
+
+            .leaflet-popup-content {
+                max-height: 60vh;
+                overflow-y: auto;
+            }
+        }
     </style>
 </head>
 <body>
@@ -223,7 +288,7 @@
                         popupContent += `
                             <div style="margin-top: 10px; text-align: center; max-width: 100%; overflow: hidden;">
                                 <img src="${feature.properties["LIDAR SS"]}" 
-                                     style="max-width: 100%; max-height: 350px; height: auto; border: 1px solid #ddd;" 
+                                     style="max-width: 100%; max-height: ${window.innerHeight * 0.4}px; height: auto; border: 1px solid #ddd;" 
                                      alt="Gravestone Screenshot">
                             </div>`;
                     }
@@ -238,9 +303,10 @@
                             </div>`;
                     }
                     layer.bindPopup(popupContent, {
-                        maxWidth: 600,
-                        minWidth: 400,
-                        maxHeight: 400
+                        maxWidth: window.innerWidth > 768 ? 600 : 300,
+                        minWidth: window.innerWidth > 768 ? 400 : 250,
+                        maxHeight: window.innerHeight * 0.7,
+                        autoPanPadding: [10, 10]
                     });
                 }
 
@@ -249,9 +315,7 @@
                         feature.geometry.coordinates[1],
                         feature.geometry.coordinates[0]
                     ];
-                    // Calculate offset to position point near bottom
-                    var containerHeight = map.getContainer().clientHeight;
-                    var offset = containerHeight * 0.35; // Increased offset to move point lower
+                    var offset = calculateMapOffset();
                     var point = map.project(latlng, 23);
                     point.y -= offset;
                     var newCenter = map.unproject(point, 23);
@@ -301,9 +365,7 @@
                             feature.geometry.coordinates[1],
                             feature.geometry.coordinates[0]
                         ];
-                        // Calculate offset to position point near bottom
-                        var containerHeight = map.getContainer().clientHeight;
-                        var offset = containerHeight * 0.35; // Increased offset to match click handler
+                        var offset = calculateMapOffset();
                         var point = map.project(latlng, 23);
                         point.y -= offset;
                         var newCenter = map.unproject(point, 23);
@@ -397,6 +459,24 @@
                     }).join("")}
                 </ul>
             `;
+        }
+
+        // Add resize handler for responsive updates
+        window.addEventListener('resize', function() {
+            gravestonesLayer.eachLayer(function(layer) {
+                if (layer.getPopup()) {
+                    layer.getPopup().options.maxWidth = window.innerWidth > 768 ? 600 : 300;
+                    layer.getPopup().options.minWidth = window.innerWidth > 768 ? 400 : 250;
+                    layer.getPopup().options.maxHeight = window.innerHeight * 0.7;
+                }
+            });
+        });
+
+        // Adjust map offset calculation for mobile
+        function calculateMapOffset() {
+            var containerHeight = map.getContainer().clientHeight;
+            var isMobile = window.innerWidth <= 768;
+            return containerHeight * (isMobile ? 0.25 : 0.35); // Less offset on mobile
         }
     </script>
 </body>
