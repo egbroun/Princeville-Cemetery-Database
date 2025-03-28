@@ -291,10 +291,33 @@
 
             Gravestones.features.forEach(function (feature) {
                 var name = feature.properties.Name ? feature.properties.Name.toLowerCase() : "n/a";
-                if (name.includes(query)) {
+                
+                // Format birth date
+                var birthDate = formatDateString(
+                    feature.properties["Month of Birth"],
+                    feature.properties["Day of Birth"],
+                    feature.properties["Year of Birth"]
+                );
+
+                // Format death date
+                var deathDate = formatDateString(
+                    feature.properties["Month of Death"],
+                    feature.properties["Day of Death"],
+                    feature.properties["Year of Death"]
+                );
+
+                // Check if query matches name or dates
+                if (name.includes(query) || 
+                    birthDate.toLowerCase().includes(query) || 
+                    deathDate.toLowerCase().includes(query)) {
+                    
                     var resultDiv = document.createElement('div');
                     resultDiv.className = 'info-details';
-                    resultDiv.innerHTML = `<strong>${feature.properties.Name || "N/A"}</strong>`;
+                    resultDiv.innerHTML = `
+                        <strong>${feature.properties.Name || "N/A"}</strong><br>
+                        <small>Birth: ${birthDate} | Death: ${deathDate}</small>
+                    `;
+                    
                     resultDiv.addEventListener('click', function () {
                         var latlng = [
                             feature.geometry.coordinates[1],
@@ -329,6 +352,20 @@
                 infoPane.innerHTML = '<div class="info-details">No results found</div>';
             }
         });
+
+        // Helper function to format date string
+        function formatDateString(month, day, year) {
+            // Handle special cases
+            if (!month && !day && !year) return "Not Given";
+            if (month === "0" && day === "0" && year === "0") return "Illegible";
+            
+            // Format individual components
+            let formattedMonth = month === "0" ? "??" : (month || "??");
+            let formattedDay = day === "0" ? "??" : (day || "??");
+            let formattedYear = year === "0" ? "????" : (year || "????");
+            
+            return `${formattedMonth}/${formattedDay}/${formattedYear}`;
+        }
 
         function updateInfoPane(feature) {
             const displayProperties = [
