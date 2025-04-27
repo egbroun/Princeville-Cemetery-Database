@@ -148,6 +148,71 @@
         .leaflet-popup-content {
             font-size: 16px; 
         }
+
+        /* Landscape mobile optimization */
+        @media screen and (max-width: 900px) and (orientation: landscape) {
+            #map-container {
+                flex-direction: row;
+                gap: 8px;
+                height: 80vh;
+                min-height: 300px;
+            }
+            #map {
+                flex: 2;
+                height: 80vh;
+                min-height: 200px;
+                width: 60vw;
+            }
+            #info-pane {
+                flex: 1;
+                height: 80vh;
+                min-width: 180px;
+                max-width: 40vw;
+                padding: 8px;
+                font-size: 1em;
+                overflow-y: auto;
+            }
+            .leaflet-popup-content {
+                max-width: 90vw !important;
+                font-size: 1em;
+            }
+            .leaflet-popup-content img {
+                max-width: 100%;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+            }
+        }
+
+        /* Portrait mobile fallback */
+        @media screen and (max-width: 600px) and (orientation: portrait) {
+            #map-container {
+                flex-direction: column;
+                gap: 8px;
+                height: 80vh;
+            }
+            #map {
+                height: 45vh;
+                width: 100vw;
+                min-height: 120px;
+            }
+            #info-pane {
+                height: 35vh;
+                width: 100vw;
+                min-width: 0;
+                max-width: 100vw;
+                font-size: 0.95em;
+                padding: 8px;
+            }
+            .leaflet-popup-content {
+                max-width: 95vw !important;
+                font-size: 0.95em;
+            }
+            .leaflet-popup-content img {
+                max-width: 100%;
+                height: auto;
+            }
+        }
     </style>
 </head>
 <body>
@@ -238,10 +303,11 @@
                             </div>`;
                     }
                     layer.bindPopup(popupContent, {
-                        maxWidth: window.innerWidth > 768 ? 600 : 300,
-                        minWidth: window.innerWidth > 768 ? 400 : 250,
+                        maxWidth: window.innerWidth < 900 ? Math.floor(window.innerWidth * 0.9) : 600,
+                        minWidth: window.innerWidth < 900 ? Math.floor(window.innerWidth * 0.7) : 400,
                         maxHeight: window.innerHeight * 0.7,
-                        autoPanPadding: [10, 10]
+                        autoPan: true,
+                        keepInView: true
                     });
                 }
 
@@ -437,9 +503,13 @@
         window.addEventListener('resize', function() {
             gravestonesLayer.eachLayer(function(layer) {
                 if (layer.getPopup()) {
-                    layer.getPopup().options.maxWidth = window.innerWidth > 768 ? 600 : 300;
-                    layer.getPopup().options.minWidth = window.innerWidth > 768 ? 400 : 250;
+                    layer.getPopup().options.maxWidth = window.innerWidth < 900 ? Math.floor(window.innerWidth * 0.9) : 600;
+                    layer.getPopup().options.minWidth = window.innerWidth < 900 ? Math.floor(window.innerWidth * 0.7) : 400;
                     layer.getPopup().options.maxHeight = window.innerHeight * 0.7;
+                    if (layer.getPopup().isOpen()) {
+                        layer.closePopup();
+                        layer.openPopup();
+                    }
                 }
             });
         });
