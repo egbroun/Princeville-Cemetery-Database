@@ -551,11 +551,10 @@
             return containerHeight * (isMobile ? 0.25 : 0.35); // Less offset on mobile
         }
 
+        // Popup scaling logic
         function scaleOpenPopup() {
-            // Only scale if a popup is open
             var popup = document.querySelector('.scalable-popup .leaflet-popup-content-wrapper');
             if (popup) {
-                // Calculate scale: 1 at zoom 23, smaller at lower zooms
                 var currentZoom = map.getZoom();
                 var maxZoom = map.getMaxZoom ? map.getMaxZoom() : 23;
                 var minZoom = map.getMinZoom ? map.getMinZoom() : 8;
@@ -564,7 +563,6 @@
             }
         }
 
-        // Scale popup on zoom and when popup opens
         map.on('zoomend', scaleOpenPopup);
         map.on('popupopen', scaleOpenPopup);
 
