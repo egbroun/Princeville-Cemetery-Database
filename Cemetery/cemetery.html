@@ -149,6 +149,11 @@
             font-size: 16px; 
         }
 
+        .scalable-popup .leaflet-popup-content-wrapper {
+            transition: transform 0.2s;
+            transform-origin: bottom center;
+        }
+
         /* Landscape mobile optimization */
         @media screen and (max-width: 900px) and (orientation: landscape) {
             #map-container {
@@ -303,11 +308,11 @@
                             </div>`;
                     }
                     layer.bindPopup(popupContent, {
-                        maxWidth: window.innerWidth < 900 ? Math.floor(window.innerWidth * 0.9) : 600,
-                        minWidth: window.innerWidth < 900 ? Math.floor(window.innerWidth * 0.7) : 400,
-                        maxHeight: window.innerHeight * 0.7,
+                        maxWidth: 600,
+                        minWidth: 400,
                         autoPan: true,
-                        keepInView: true
+                        keepInView: true,
+                        className: 'scalable-popup'
                     });
                 }
 
@@ -520,6 +525,28 @@
             var isMobile = window.innerWidth <= 768;
             return containerHeight * (isMobile ? 0.25 : 0.35); // Less offset on mobile
         }
+
+        function scaleOpenPopup() {
+            // Only scale if a popup is open
+            var popup = document.querySelector('.scalable-popup .leaflet-popup-content-wrapper');
+            if (popup) {
+                // Calculate scale: 1 at zoom 23, smaller at lower zooms
+                var currentZoom = map.getZoom();
+                var maxZoom = map.getMaxZoom ? map.getMaxZoom() : 23;
+                var minZoom = map.getMinZoom ? map.getMinZoom() : 8;
+                var scale = Math.max(0.3, (currentZoom - minZoom) / (maxZoom - minZoom));
+                popup.style.transform = `scale(${scale})`;
+            }
+        }
+
+        // Scale popup on zoom and when popup opens
+        map.on('zoomend', scaleOpenPopup);
+        map.on('popupopen', scaleOpenPopup);
+
+        map.on('popupclose', function() {
+            var popup = document.querySelector('.scalable-popup .leaflet-popup-content-wrapper');
+            if (popup) popup.style.transform = '';
+        });
     </script>
 </body>
 </html>
