@@ -149,9 +149,9 @@
             font-size: 16px; 
         }
 
-        .scalable-popup .leaflet-popup-content-wrapper {
+        .scalable-popup .leaflet-popup-content {
             transition: transform 0.2s;
-            transform-origin: bottom center;
+            transform-origin: top center;
         }
 
         .leaflet-popup-close-button {
@@ -553,13 +553,13 @@
 
         // Popup scaling logic
         function scaleOpenPopup() {
-            var popup = document.querySelector('.scalable-popup .leaflet-popup-content-wrapper');
-            if (popup) {
+            var popupContent = document.querySelector('.scalable-popup .leaflet-popup-content');
+            if (popupContent) {
                 var currentZoom = map.getZoom();
                 var maxZoom = map.getMaxZoom ? map.getMaxZoom() : 23;
                 var minZoom = map.getMinZoom ? map.getMinZoom() : 8;
                 var scale = Math.max(0.3, (currentZoom - minZoom) / (maxZoom - minZoom));
-                popup.style.transform = `scale(${scale})`;
+                popupContent.style.transform = `scale(${scale})`;
             }
         }
 
@@ -567,8 +567,8 @@
         map.on('popupopen', scaleOpenPopup);
 
         map.on('popupclose', function() {
-            var popup = document.querySelector('.scalable-popup .leaflet-popup-content-wrapper');
-            if (popup) popup.style.transform = '';
+            var popupContent = document.querySelector('.scalable-popup .leaflet-popup-content');
+            if (popupContent) popupContent.style.transform = '';
         });
     </script>
 </body>
