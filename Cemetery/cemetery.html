@@ -243,48 +243,6 @@
                 height: auto;
             }
         }
-
-        .custom-map-popup {
-            border: none;
-            background: none;
-            pointer-events: auto;
-        }
-
-        .custom-popup-inner {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-            padding: 18px 18px 12px 18px;
-            min-width: 220px;
-            max-width: 300px;
-            max-height: 40vh;
-            font-size: 1em;
-            position: relative;
-            pointer-events: auto;
-        }
-
-        .custom-popup-close {
-            position: absolute;
-            top: 6px;
-            right: 10px;
-            font-size: 1.5em;
-            color: #333;
-            text-decoration: none;
-            background: #fff;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            text-align: center;
-            line-height: 28px;
-            z-index: 10;
-            border: 1px solid #ccc;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-        }
-        .custom-popup-close:hover {
-            background: #4794b3;
-            color: #fff;
-            border-color: #35718a;
-        }
     </style>
 </head>
 <body>
@@ -358,9 +316,9 @@
                     let popupContent = `<strong>${feature.properties.Name}</strong>`;
                     if (feature.properties["LIDAR SS"] && feature.properties["LIDAR SS"] !== "N/A") {
                         popupContent += `
-                            <div style="margin-top: 10px; text-align: center;">
+                            <div style="margin-top: 10px; text-align: center; max-width: 100%; overflow: hidden;">
                                 <img src="${feature.properties["LIDAR SS"]}" 
-                                     style="max-width: 100%; max-height: 30vh; height: auto; border: 1px solid #ddd;" 
+                                     style="max-width: 100%; max-height: ${window.innerHeight * 0.4}px; height: auto; border: 1px solid #ddd;" 
                                      alt="Gravestone Screenshot">
                             </div>`;
                     }
@@ -374,23 +332,36 @@
                                 </a>
                             </div>`;
                     }
-                    layer.on('click', function () {
-                        var latlng = [
-                            feature.geometry.coordinates[1],
-                            feature.geometry.coordinates[0]
-                        ];
-                        createCustomPopup(latlng, popupContent);
-                        resetAllHighlights();
-                        layer.setStyle({
-                            fillColor: "red",
-                            color: "red",
-                            weight: 2,
-                            radius: 10
-                        });
-                        highlightedLayer = layer;
-                        updateInfoPane(feature);
+                    layer.bindPopup(popupContent, {
+                        maxWidth: 600,
+                        minWidth: 400,
+                        autoPan: true,
+                        keepInView: true,
+                        className: 'scalable-popup'
                     });
                 }
+
+                layer.on('click', function () {
+                    var latlng = [
+                        feature.geometry.coordinates[1],
+                        feature.geometry.coordinates[0]
+                    ];
+                    var offset = calculateMapOffset();
+                    var point = map.project(latlng, 23);
+                    point.y -= offset;
+                    var newCenter = map.unproject(point, 23);
+                    
+                    map.setView(newCenter, 23);
+                    resetAllHighlights();
+                    layer.setStyle({
+                        fillColor: "red",
+                        color: "red",
+                        weight: 2,
+                        radius: 10
+                    });
+                    highlightedLayer = layer;
+                    updateInfoPane(feature);
+                });
             },
             pointToLayer: function (feature, latlng) {
                 return L.circleMarker(latlng, {
@@ -448,7 +419,12 @@
                             feature.geometry.coordinates[1],
                             feature.geometry.coordinates[0]
                         ];
-                        createCustomPopup(latlng, resultDiv.innerHTML);
+                        var offset = calculateMapOffset();
+                        var point = map.project(latlng, 23);
+                        point.y -= offset;
+                        var newCenter = map.unproject(point, 23);
+                        
+                        map.setView(newCenter, 23);
                         resetAllHighlights();
                         gravestonesLayer.eachLayer(function (layer) {
                             if (layer.feature.properties.Name === feature.properties.Name) {
@@ -594,38 +570,6 @@
             var popupContent = document.querySelector('.scalable-popup .leaflet-popup-content');
             if (popupContent) popupContent.style.transform = '';
         });
-
-        function createCustomPopup(latlng, htmlContent) {
-            // Remove any existing custom popup marker
-            if (window.customPopupMarker) {
-                map.removeLayer(window.customPopupMarker);
-                window.customPopupMarker = null;
-            }
-
-            // Create a custom DivIcon
-            var customIcon = L.divIcon({
-                className: 'custom-map-popup',
-                html: `
-                    <div class="custom-popup-inner">
-                        <a href="#" class="custom-popup-close" onclick="window.closeCustomPopup();return false;">&times;</a>
-                        ${htmlContent}
-                    </div>
-                `,
-                iconAnchor: [150, 0] // adjust as needed for your popup width
-            });
-
-            // Add the marker to the map
-            window.customPopupMarker = L.marker(latlng, { icon: customIcon, interactive: true }).addTo(map);
-            map.panTo(latlng);
-        }
-
-        // Make a global close function
-        window.closeCustomPopup = function() {
-            if (window.customPopupMarker) {
-                map.removeLayer(window.customPopupMarker);
-                window.customPopupMarker = null;
-            }
-        };
     </script>
 </body>
 </html>
