@@ -509,19 +509,35 @@
          }
  
          // Update resize handler for responsive updates
+         let lastWindowHeight = window.innerHeight;
+         let isKeyboardOpen = false;
+
          window.addEventListener('resize', function() {
-             gravestonesLayer.eachLayer(function(layer) {
-                 if (layer.getPopup()) {
-                     // Smaller proportions for mobile
-                     layer.getPopup().options.maxWidth = window.innerWidth < 900 ? Math.floor(window.innerWidth * 0.6) : 600;
-                     layer.getPopup().options.minWidth = window.innerWidth < 900 ? Math.floor(window.innerWidth * 0.5) : 400;
-                     layer.getPopup().options.maxHeight = window.innerWidth < 900 ? window.innerHeight * 0.5 : window.innerHeight * 0.7;
-                     if (layer.getPopup().isOpen()) {
-                         layer.closePopup();
-                         layer.openPopup();
-                     }
+             // If the new height is greater than the last height, the keyboard probably closed
+             if (window.innerHeight > lastWindowHeight && isKeyboardOpen) {
+                 // Reset zoom to default (18 - your initial zoom level)
+                 map.setZoom(18);
+                 isKeyboardOpen = false;
+             }
+             // If the height decreased significantly, keyboard probably opened
+             else if (window.innerHeight < lastWindowHeight - 100) {
+                 isKeyboardOpen = true;
+             }
+             lastWindowHeight = window.innerHeight;
+         });
+
+         // Modify your searchBar event listener to track keyboard state
+         searchBar.addEventListener('focus', function() {
+             isKeyboardOpen = true;
+         });
+
+         searchBar.addEventListener('blur', function() {
+             // Small delay to ensure this happens after the resize event
+             setTimeout(function() {
+                 if (window.innerHeight >= lastWindowHeight) {
+                     map.setZoom(18);
                  }
-             });
+             }, 300);
          });
  
          // Adjust map offset calculation for mobile
