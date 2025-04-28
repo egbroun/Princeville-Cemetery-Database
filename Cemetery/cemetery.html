@@ -146,7 +146,38 @@
          }
  
          .leaflet-popup-content {
-             font-size: 16px; 
+             font-size: 16px;
+             position: relative;
+             margin: 8px 24px 8px 8px !important;
+         }
+ 
+         .leaflet-popup-close-button {
+             position: absolute !important;
+             right: 4px !important;
+             top: 4px !important;
+             font-size: 18px !important;
+             width: 20px !important;
+             height: 20px !important;
+             line-height: 18px !important;
+             text-align: center;
+             border-radius: 50%;
+             border: 1px solid #999;
+             color: #666;
+             text-decoration: none;
+             font-weight: bold;
+             background: white;
+             padding: 0;
+             margin: 0;
+             z-index: 100;
+         }
+ 
+         .leaflet-popup-content-wrapper {
+             padding: 1px;
+             border-radius: 8px;
+         }
+ 
+         .leaflet-popup-tip-container {
+             margin-left: -20px;
          }
  
          .scalable-popup .leaflet-popup-content-wrapper {
@@ -178,9 +209,15 @@
                  overflow-y: auto;
              }
              .leaflet-popup-content {
-                 max-width: 60vw !important;
-                 font-size: 0.9em;
-                 padding: 8px;
+                 margin: 6px 20px 6px 6px !important;
+             }
+             .leaflet-popup-close-button {
+                 right: 2px !important;
+                 top: 2px !important;
+                 font-size: 16px !important;
+                 width: 18px !important;
+                 height: 18px !important;
+                 line-height: 16px !important;
              }
              .leaflet-popup-content img {
                  max-width: 100%;
@@ -543,7 +580,15 @@
                  var maxZoom = map.getMaxZoom ? map.getMaxZoom() : 23;
                  var minZoom = map.getMinZoom ? map.getMinZoom() : 8;
                  var scale = Math.max(0.3, (currentZoom - minZoom) / (maxZoom - minZoom));
+                 
+                 // Apply transform to the entire popup wrapper
                  popup.style.transform = `scale(${scale})`;
+                 
+                 // Ensure the close button stays in position
+                 var closeButton = popup.querySelector('.leaflet-popup-close-button');
+                 if (closeButton) {
+                     closeButton.style.transform = 'none';  // Reset any transform
+                 }
              }
          }
  
