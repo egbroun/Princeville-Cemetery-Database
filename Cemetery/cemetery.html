@@ -2,7 +2,7 @@
  <html>
  <head>
      <meta charset="utf-8" />
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
      <title>Wilson Cemetery Database</title>
      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
      <style>
@@ -508,35 +508,22 @@
              `;
          }
  
-         // Update resize handler for responsive updates
-         let lastWindowHeight = window.innerHeight;
-         let isKeyboardOpen = false;
-
-         window.addEventListener('resize', function() {
-             // If the new height is greater than the last height, the keyboard probably closed
-             if (window.innerHeight > lastWindowHeight && isKeyboardOpen) {
-                 // Reset zoom to default (18 - your initial zoom level)
-                 map.setZoom(18);
-                 isKeyboardOpen = false;
-             }
-             // If the height decreased significantly, keyboard probably opened
-             else if (window.innerHeight < lastWindowHeight - 100) {
-                 isKeyboardOpen = true;
-             }
-             lastWindowHeight = window.innerHeight;
-         });
-
-         // Modify your searchBar event listener to track keyboard state
-         searchBar.addEventListener('focus', function() {
-             isKeyboardOpen = true;
+         // Add these new event listeners
+         searchBar.addEventListener('focus', function(e) {
+             // Prevent zoom on focus
+             document.documentElement.style.touchAction = 'none';
+             document.body.style.touchAction = 'none';
          });
 
          searchBar.addEventListener('blur', function() {
-             // Small delay to ensure this happens after the resize event
+             // Reset touch action and viewport scale
+             document.documentElement.style.touchAction = '';
+             document.body.style.touchAction = '';
+             // Force viewport reset
+             let viewport = document.querySelector('meta[name=viewport]');
+             viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0');
              setTimeout(function() {
-                 if (window.innerHeight >= lastWindowHeight) {
-                     map.setZoom(18);
-                 }
+                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
              }, 300);
          });
  
